@@ -28,12 +28,12 @@ public class HumanPlayer extends Player {
      */
     @Override
     void move(Game g) {
+        killMoves(g);
         chop = new Scanner(System.in);
         boolean loop = true, confirmed = false;
         String input = "";
         Piece selected = null;
         String[] moves = null;
-        int destRow = 0, destCol = 0;
         
         while (!confirmed) {
             //select piece
@@ -43,14 +43,12 @@ public class HumanPlayer extends Player {
                     input = chop.next("[0-7],[0-7]");
                     selected = validPiece(g, input);
                     loop = selected == null || !pieceCanMove(g, selected, getColor());
-                    if (loop)
-                        System.out.println("No piece at requested position, try again.");
                 } catch (InputMismatchException e) {
                     System.out.println("Please enter a valid piece...");
                     chop.next();
                 }
             }
-            chop.nextLine();
+            chop.nextLine();//TODO: why does this mess up when killMoves() is invoked?
             //select new position (Note: the inputted moves MUST be in order. This will be accounted for in GUI)
             loop = true;
             System.out.println(getName() + ", select where to move your piece...");
@@ -59,8 +57,6 @@ public class HumanPlayer extends Player {
                 if (input.matches("([0-8],[0-8] ?)+")) {
                     moves = input.split("[ ,]");
                     loop = !validMove(g, moves, selected);
-                    destRow = Integer.parseInt(moves[moves.length - 2]);
-                    destCol = Integer.parseInt(moves[moves.length - 1]);
                 }
                 if (loop)
                         System.out.println("Inputted move not valid, please try again.");
@@ -73,7 +69,7 @@ public class HumanPlayer extends Player {
                     input = chop.next("[ynYN]{1}?");
                     loop = false;
                 } catch (InputMismatchException e) {
-                    System.out.println("Please answer the prior question properly.");
+                    System.out.println("Please answer the prior question correctly.");
                     chop.next();
                 }
             }
@@ -83,7 +79,7 @@ public class HumanPlayer extends Player {
                 selected = null;
             }
         }
-        
+        clearKillMoves();
         if (selected != null)
             selected.move(moves, g);
     }
