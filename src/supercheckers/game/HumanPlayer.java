@@ -15,9 +15,19 @@ import java.util.Scanner;
 public class HumanPlayer extends Player {
 
     private Scanner chop;
+    private String password;
 
-    public HumanPlayer(String n) {
+    public HumanPlayer(String n, String p) {
         super(n);
+        password = p;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /*

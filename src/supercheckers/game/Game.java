@@ -18,7 +18,7 @@ public class Game {
     private final Player two;
 
     public Game() {
-        one = new HumanPlayer("Test Player"); //TODO maybe change this to a computer player later on to have some fun :)
+        one = new HumanPlayer("Test Player", ""); //TODO maybe change this to a computer player later on to have some fun :)
         two = new ComputerPlayer();
         one.setColor("red");
         two.setColor("black");
@@ -81,7 +81,7 @@ public class Game {
     
     //nonGUI game for debug
     public static void main(String[] args) {
-        Player one = new HumanPlayer("test1"), two = new HumanPlayer("test2");
+        Player one = new HumanPlayer("test1", ""), two = new HumanPlayer("test2", "");
         Game test = new Game(one, two);
         test.play();
     }

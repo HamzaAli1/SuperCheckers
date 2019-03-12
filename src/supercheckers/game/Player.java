@@ -15,7 +15,7 @@ public abstract class Player implements Comparable {
     private int rank;
     private String name;
     private String color;
-    private final ArrayList<Piece> kills = new ArrayList<>(); //hah this is pretty lazy, TODO: figure out how to fix this
+    private final ArrayList<Piece> kills = new ArrayList<>();
     
     public Player(String n) {
         name = n;
