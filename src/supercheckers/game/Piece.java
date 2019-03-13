@@ -86,7 +86,7 @@ public class Piece {
     
     @Override
     public String toString() {
-        return getColor() + getType() + getRow() + getColumn();
+        return getRow() + " " + getColumn();
         
         /*
         if (color.equals("red")) {

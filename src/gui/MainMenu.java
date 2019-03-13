@@ -5,8 +5,22 @@
  */
 package gui;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.TreeSet;
+import javax.swing.table.DefaultTableModel;
+import misc.DataModel;
+import supercheckers.game.ComputerPlayer;
+import supercheckers.game.Game;
+import supercheckers.game.HumanPlayer;
+import supercheckers.game.Player;
 
 /**
  *
@@ -14,16 +28,43 @@ import java.awt.Toolkit;
  */
 public final class MainMenu extends javax.swing.JFrame {
 
+    //holds data on all players
+    private TreeSet<Player> players;
+    
+    //file to which rankings are saved
+    private final File datFile = new File("./dat/playerrankings.dat");
+    
+    //object data is saved to
+    private DataModel dm;
+    
+    //temp variable for menu interactions
+    private HumanPlayer currentUser;
+    
+    /*temp variable used to determine purpose for login:
+    1 = change username
+    2 = change password
+    3 = pvp
+    4 = vs com */
+    private int loginPurpose;
+    
+    //instance of a game which gui calls
+    private Game game;
+        
     /**
      * Creates new form MainMenu
      */
     public MainMenu() {
+        players = new TreeSet();
+        file2data();
+        
+        //fakeData(); //debug
+        
         initComponents();
         
         Font temp = label_title.getFont();
         label_title.setFont(temp.deriveFont(Font.BOLD, temp.getSize() * 2));
         
-        this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         this.setResizable(false);
     }
 
@@ -42,19 +83,55 @@ public final class MainMenu extends javax.swing.JFrame {
         label_usernameLogin = new javax.swing.JLabel();
         button_signup = new javax.swing.JButton();
         label_passwordLogin = new javax.swing.JLabel();
-        textField_usernameLogin = new javax.swing.JTextField();
-        textField_passwordLogin = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
+        textField_username = new javax.swing.JTextField();
+        textField_password = new javax.swing.JTextField();
+        Leaderboards = new javax.swing.JDialog();
+        panel_leaderboards = new javax.swing.JPanel();
+        scrollPane_leaderboards = new javax.swing.JScrollPane();
+        table_leaderboards = new javax.swing.JTable();
+        label_leaderboards = new javax.swing.JLabel();
+        Options = new javax.swing.JDialog();
+        panel_options = new javax.swing.JPanel();
+        button_changeName = new javax.swing.JButton();
+        button_changePassword = new javax.swing.JButton();
+        label_options = new javax.swing.JLabel();
+        button_newPlayer = new javax.swing.JButton();
+        textField_options = new javax.swing.JTextField();
+        label_help = new javax.swing.JLabel();
+        PlayMenu = new javax.swing.JDialog();
+        panel_play = new javax.swing.JPanel();
+        button_pvp = new javax.swing.JButton();
+        button_com = new javax.swing.JButton();
+        label_com = new javax.swing.JLabel();
+        label_pvp = new javax.swing.JLabel();
+        label_play = new javax.swing.JLabel();
+        panel_main = new javax.swing.JPanel();
         button_play = new javax.swing.JButton();
         button_leaderboards = new javax.swing.JButton();
         button_options = new javax.swing.JButton();
         label_title = new javax.swing.JLabel();
 
+        LoginPage.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                LoginPageWindowClosing(evt);
+            }
+        });
+
         button_login.setText("Login");
+        button_login.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_loginActionPerformed(evt);
+            }
+        });
 
         label_usernameLogin.setText("Username");
 
         button_signup.setText("Sign Up");
+        button_signup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_signupActionPerformed(evt);
+            }
+        });
 
         label_passwordLogin.setText("Password");
 
@@ -69,11 +146,11 @@ public final class MainMenu extends javax.swing.JFrame {
                         .addComponent(button_login, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(button_signup, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(label_usernameLogin, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(label_passwordLogin, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(textField_passwordLogin, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(textField_usernameLogin, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(textField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(label_usernameLogin)
+                        .addComponent(label_passwordLogin)
+                        .addComponent(textField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         panel_loginLayout.setVerticalGroup(
@@ -82,11 +159,11 @@ public final class MainMenu extends javax.swing.JFrame {
                 .addGap(43, 43, 43)
                 .addComponent(label_usernameLogin)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textField_passwordLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(textField_username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(label_passwordLogin)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(textField_usernameLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(textField_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
                 .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(button_signup)
@@ -105,32 +182,277 @@ public final class MainMenu extends javax.swing.JFrame {
             .addComponent(panel_login, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        Leaderboards.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                LeaderboardsWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                LeaderboardsWindowClosing(evt);
+            }
+        });
+
+        table_leaderboards.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Rank", "Player", "Points?!?!"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        table_leaderboards.getTableHeader().setReorderingAllowed(false);
+        scrollPane_leaderboards.setViewportView(table_leaderboards);
+
+        label_leaderboards.setText("Leaderboards");
+
+        javax.swing.GroupLayout panel_leaderboardsLayout = new javax.swing.GroupLayout(panel_leaderboards);
+        panel_leaderboards.setLayout(panel_leaderboardsLayout);
+        panel_leaderboardsLayout.setHorizontalGroup(
+            panel_leaderboardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(scrollPane_leaderboards, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+            .addGroup(panel_leaderboardsLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(label_leaderboards)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panel_leaderboardsLayout.setVerticalGroup(
+            panel_leaderboardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_leaderboardsLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(label_leaderboards)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(scrollPane_leaderboards, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout LeaderboardsLayout = new javax.swing.GroupLayout(Leaderboards.getContentPane());
+        Leaderboards.getContentPane().setLayout(LeaderboardsLayout);
+        LeaderboardsLayout.setHorizontalGroup(
+            LeaderboardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(LeaderboardsLayout.createSequentialGroup()
+                .addComponent(panel_leaderboards, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
+        );
+        LeaderboardsLayout.setVerticalGroup(
+            LeaderboardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel_leaderboards, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        Options.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                OptionsWindowClosing(evt);
+            }
+        });
+
+        button_changeName.setText("Change Username");
+        button_changeName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_changeNameActionPerformed(evt);
+            }
+        });
+
+        button_changePassword.setText("Change Password");
+        button_changePassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_changePasswordActionPerformed(evt);
+            }
+        });
+
+        label_options.setText("Options");
+
+        button_newPlayer.setText("Create New Player");
+        button_newPlayer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_newPlayerActionPerformed(evt);
+            }
+        });
+
+        label_help.setText("Enter New Username/Password Here");
+
+        javax.swing.GroupLayout panel_optionsLayout = new javax.swing.GroupLayout(panel_options);
+        panel_options.setLayout(panel_optionsLayout);
+        panel_optionsLayout.setHorizontalGroup(
+            panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_optionsLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(button_newPlayer)
+                    .addGroup(panel_optionsLayout.createSequentialGroup()
+                        .addGroup(panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(label_options)
+                            .addComponent(button_changeName)
+                            .addComponent(button_changePassword))
+                        .addGap(18, 18, 18)
+                        .addGroup(panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(textField_options)
+                            .addComponent(label_help, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+        panel_optionsLayout.setVerticalGroup(
+            panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_optionsLayout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(label_options)
+                .addGroup(panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_optionsLayout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(panel_optionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(button_changeName)
+                            .addComponent(label_help))
+                        .addGap(18, 18, 18)
+                        .addComponent(button_changePassword))
+                    .addGroup(panel_optionsLayout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(textField_options, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addComponent(button_newPlayer)
+                .addContainerGap(98, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout OptionsLayout = new javax.swing.GroupLayout(Options.getContentPane());
+        Options.getContentPane().setLayout(OptionsLayout);
+        OptionsLayout.setHorizontalGroup(
+            OptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel_options, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        OptionsLayout.setVerticalGroup(
+            OptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel_options, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        PlayMenu.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                PlayMenuWindowClosing(evt);
+            }
+        });
+
+        button_pvp.setText("PvP");
+
+        button_com.setText("Vs. Computer");
+        button_com.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_comActionPerformed(evt);
+            }
+        });
+
+        label_com.setText("Hone your skills in a friendly match against the computer!");
+
+        label_pvp.setText("Test your might against another player to increase your rank!");
+
+        label_play.setText("Play a Match");
+
+        javax.swing.GroupLayout panel_playLayout = new javax.swing.GroupLayout(panel_play);
+        panel_play.setLayout(panel_playLayout);
+        panel_playLayout.setHorizontalGroup(
+            panel_playLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_playLayout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addGroup(panel_playLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(label_pvp, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                    .addGroup(panel_playLayout.createSequentialGroup()
+                        .addGroup(panel_playLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(button_com, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(button_pvp, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(label_com, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(panel_playLayout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(label_play)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panel_playLayout.setVerticalGroup(
+            panel_playLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_playLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(label_play)
+                .addGap(34, 34, 34)
+                .addComponent(button_pvp)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(label_pvp)
+                .addGap(45, 45, 45)
+                .addComponent(button_com)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(label_com)
+                .addContainerGap(76, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout PlayMenuLayout = new javax.swing.GroupLayout(PlayMenu.getContentPane());
+        PlayMenu.getContentPane().setLayout(PlayMenuLayout);
+        PlayMenuLayout.setHorizontalGroup(
+            PlayMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel_play, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        PlayMenuLayout.setVerticalGroup(
+            PlayMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel_play, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         button_play.setText("Play");
+        button_play.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_playActionPerformed(evt);
+            }
+        });
 
         button_leaderboards.setText("Leaderboards");
+        button_leaderboards.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_leaderboardsActionPerformed(evt);
+            }
+        });
 
         button_options.setText("Options");
+        button_options.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_optionsActionPerformed(evt);
+            }
+        });
 
         label_title.setText("SuperCheckers!");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout panel_mainLayout = new javax.swing.GroupLayout(panel_main);
+        panel_main.setLayout(panel_mainLayout);
+        panel_mainLayout.setHorizontalGroup(
+            panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_mainLayout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(label_title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(button_options, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(button_leaderboards, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                     .addComponent(button_play, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(75, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        panel_mainLayout.setVerticalGroup(
+            panel_mainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_mainLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(label_title)
                 .addGap(26, 26, 26)
@@ -147,19 +469,324 @@ public final class MainMenu extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panel_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panel_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void button_leaderboardsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_leaderboardsActionPerformed
+        //take user to leaderboard menu, which displays rankings.
+        //start by populating table
+        String[][] data = new String[players.size() + 1][3];
+        String[] headers = {"Rank", "Player Name", "Points"};
+        String name;
+        int rank = 0, points;
+        for (Player p : players) {
+            name = p.getName();
+            points = p.getPoints();
+            
+            data[rank][0] = "" + (rank + 1);
+            data[rank][1] = name;
+            data[rank][2] = "" + points;
+            
+            rank++;
+        }
+        DefaultTableModel dtm = new DefaultTableModel(data, headers);
+        table_leaderboards.setModel(dtm);
+        
+        //adjust window
+        Leaderboards.setSize(408, 300);
+        Leaderboards.setMinimumSize(new Dimension(408,300));
+        Leaderboards.setVisible(true);
+        Leaderboards.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        this.setEnabled(false);
+    }//GEN-LAST:event_button_leaderboardsActionPerformed
+
+    //for debugging
+    private void fakeData() {
+        players.clear();
+        Player temp;
+        for (int i = 0; i < 10; i++) {
+            temp = new HumanPlayer("test" + i, "boop");
+            players.add(temp);
+        }
+    }
+    
+    private void LeaderboardsWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosed
+    }//GEN-LAST:event_LeaderboardsWindowClosed
+
+    private void LeaderboardsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosing
+        //set main window visible
+        this.setEnabled(true);
+    }//GEN-LAST:event_LeaderboardsWindowClosing
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        data2file();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+    }//GEN-LAST:event_formWindowOpened
+
+    private void button_optionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_optionsActionPerformed
+        //opens up options menu
+        
+        //adjust window
+        Options.setSize(408, 300);
+        Options.setVisible(true);
+        Options.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        Options.setResizable(false);
+        this.setEnabled(false);
+    }//GEN-LAST:event_button_optionsActionPerformed
+
+    private void OptionsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_OptionsWindowClosing
+        //set main window visible
+        this.setEnabled(true);
+    }//GEN-LAST:event_OptionsWindowClosing
+
+    private void button_newPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_newPlayerActionPerformed
+        //opens up signin menu, but disables login button (only sign up available)
+        
+        //adjust window
+        LoginPage.setSize(408, 300);
+        LoginPage.setVisible(true);
+        LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        LoginPage.setResizable(false);
+        
+        button_login.setEnabled(false);
+        Options.setEnabled(false);
+    }//GEN-LAST:event_button_newPlayerActionPerformed
+
+    private void button_changePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_changePasswordActionPerformed
+        //opens up signin menu, but disables sign up button (only login available)
+        if (!textField_options.getText().isEmpty()) {
+            //adjust window
+            LoginPage.setSize(408, 300);
+            LoginPage.setVisible(true);
+            LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setResizable(false);
+
+            button_signup.setEnabled(false);
+            Options.setEnabled(false);
+            loginPurpose = 2;
+            textField_options.setText("");
+        } else {
+            //todo error
+        }
+    }//GEN-LAST:event_button_changePasswordActionPerformed
+
+    private void button_changeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_changeNameActionPerformed
+        //opens up signin menu, but disables sign up button (only login available)
+        if (!textField_options.getText().isEmpty()) {
+            //adjust window
+            LoginPage.setSize(408, 300);
+            LoginPage.setVisible(true);
+            LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setResizable(false);
+
+            button_signup.setEnabled(false);
+            Options.setEnabled(false);
+            loginPurpose = 1;
+            textField_options.setText("");
+        } else {
+            //todo error
+        }
+    }//GEN-LAST:event_button_changeNameActionPerformed
+
+    private void LoginPageWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LoginPageWindowClosing
+        if (loginPurpose == 1 || loginPurpose == 2)
+            Options.setEnabled(true);
+        else if (loginPurpose == 3 || loginPurpose == 4)
+            PlayMenu.setEnabled(true);
+        
+        button_login.setEnabled(true);
+        button_signup.setEnabled(true);
+    }//GEN-LAST:event_LoginPageWindowClosing
+
+    private void button_signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_signupActionPerformed
+        //adds inputted player to rankings
+        String username = textField_username.getText(), password = textField_password.getText();
+        HumanPlayer temp;
+        if (!username.isEmpty() && !password.isEmpty()) {
+            if (!usernameTaken(username)) {
+                temp = new HumanPlayer(username, password);
+                players.add(temp);
+                
+                LoginPage.setVisible(false);
+                
+                if (loginPurpose == 1 || loginPurpose == 2)
+                    Options.setEnabled(true);
+                else if (loginPurpose == 3) {
+                    //TODO:
+                }
+                else if (loginPurpose == 4) {
+                    play(temp);
+                }
+                
+                button_login.setEnabled(true);
+            } else {
+                //error username taken
+            }
+            
+            textField_username.setText("");
+            textField_password.setText("");
+        }
+    }//GEN-LAST:event_button_signupActionPerformed
+
+    private void button_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_loginActionPerformed
+        //sets inputted user as currentUser
+        Player temp;
+        String username = textField_username.getText(), password = textField_password.getText();
+        if (!username.isEmpty() && !password.isEmpty()) {
+            temp = validUser(username, password);
+            if (temp != null) {
+                currentUser = (HumanPlayer) temp;
+                
+                LoginPage.setVisible(false);
+                
+                if (loginPurpose == 1) {
+                    currentUser.setName(textField_options.getText());
+                    Options.setEnabled(true);
+                }
+                else if (loginPurpose == 2) {
+                    currentUser.setPassword(textField_options.getText());
+                    Options.setEnabled(true);
+                }
+                else if (loginPurpose == 3) {
+                    //TODO:
+                } else if (loginPurpose == 4) {
+                    play(currentUser);
+                }
+
+                button_login.setEnabled(true);
+                currentUser = null;
+            }
+            else {
+                //todo: error message
+            }
+            
+            textField_username.setText("");
+            textField_password.setText("");
+        }
+        else {
+            //todo: error message
+        }
+    }//GEN-LAST:event_button_loginActionPerformed
+
+    private void button_playActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_playActionPerformed
+        //opens up play menu, which lets user start a match
+        
+        //adjust window
+        PlayMenu.setSize(408, 300);
+        PlayMenu.setVisible(true);
+        PlayMenu.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        PlayMenu.setResizable(false);
+        this.setEnabled(false);
+    }//GEN-LAST:event_button_playActionPerformed
+
+    private void PlayMenuWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_PlayMenuWindowClosing
+        //set main window visible
+        this.setEnabled(true);
+    }//GEN-LAST:event_PlayMenuWindowClosing
+
+    private void button_comActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_comActionPerformed
+        //starts a match against a computer player
+        
+        //adjust window
+            LoginPage.setSize(408, 300);
+            LoginPage.setVisible(true);
+            LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setResizable(false);
+
+            PlayMenu.setEnabled(false);
+            loginPurpose = 4;
+    }//GEN-LAST:event_button_comActionPerformed
+
+    private Player validUser(String user, String pass) {
+        HumanPlayer temp;
+        for (Player p : players) {
+            if (p.getClass() == HumanPlayer.class) {
+                temp = (HumanPlayer) p;
+                if (temp.getName().equals(user) && temp.getPassword().equals(pass))
+                    return p;
+            }
+        }
+        return null;
+    }
+    
+    private boolean usernameTaken(String n) {
+        for (Player p : players) {
+            if (p.getName().equals(n))
+                return true;
+        }
+        return false;
+    }
+    
+    private void data2file() {
+        //save all data before closing
+        dm = new DataModel(players);
+        try {
+            FileOutputStream fos = new FileOutputStream(datFile);
+            ObjectOutputStream oos;
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(dm);
+            oos.close();
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
+    }
+    
+    private void file2data() {
+        //load data from dat file
+        try {
+            FileInputStream fis = new FileInputStream(datFile);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            
+            dm = (DataModel) ois.readObject();
+            
+            players = dm.getPlayers();
+            
+            fis.close();
+            ois.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println(ex.toString());
+        }
+    }
+    
+    //vs computer
+    private void play(HumanPlayer p) {
+        ComputerPlayer com = new ComputerPlayer(ComputerPlayer.EASY);
+        game = new Game(p, com);
+        
+        game.play();
+        
+        //TODO: maybe calc points? probably not.
+    }
+    
+    //pvp
+    private void play(HumanPlayer one, HumanPlayer two) {
+        game = new Game(one, two);
+        Player temp = game.play();
+        
+        if (temp.equals(one)) {
+            one.calcPoints(game, true);
+            two.calcPoints(game, false);
+        } else if (temp.equals(two)) {
+            one.calcPoints(game, false);
+            two.calcPoints(game, true);
+        } else {
+            one.calcPoints(game, false);
+            two.calcPoints(game, false);
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -190,18 +817,38 @@ public final class MainMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JDialog Leaderboards;
     private javax.swing.JDialog LoginPage;
+    private javax.swing.JDialog Options;
+    private javax.swing.JDialog PlayMenu;
+    private javax.swing.JButton button_changeName;
+    private javax.swing.JButton button_changePassword;
+    private javax.swing.JButton button_com;
     private javax.swing.JButton button_leaderboards;
     private javax.swing.JButton button_login;
+    private javax.swing.JButton button_newPlayer;
     private javax.swing.JButton button_options;
     private javax.swing.JButton button_play;
+    private javax.swing.JButton button_pvp;
     private javax.swing.JButton button_signup;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel label_com;
+    private javax.swing.JLabel label_help;
+    private javax.swing.JLabel label_leaderboards;
+    private javax.swing.JLabel label_options;
     private javax.swing.JLabel label_passwordLogin;
+    private javax.swing.JLabel label_play;
+    private javax.swing.JLabel label_pvp;
     private javax.swing.JLabel label_title;
     private javax.swing.JLabel label_usernameLogin;
+    private javax.swing.JPanel panel_leaderboards;
     private javax.swing.JPanel panel_login;
-    private javax.swing.JTextField textField_passwordLogin;
-    private javax.swing.JTextField textField_usernameLogin;
+    private javax.swing.JPanel panel_main;
+    private javax.swing.JPanel panel_options;
+    private javax.swing.JPanel panel_play;
+    private javax.swing.JScrollPane scrollPane_leaderboards;
+    private javax.swing.JTable table_leaderboards;
+    private javax.swing.JTextField textField_options;
+    private javax.swing.JTextField textField_password;
+    private javax.swing.JTextField textField_username;
     // End of variables declaration//GEN-END:variables
 }

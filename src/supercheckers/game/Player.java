@@ -5,17 +5,19 @@
  */
 package supercheckers.game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  *
  * @author Hamza Ali
  */
-public abstract class Player implements Comparable {
-    private int rank;
+public abstract class Player implements Comparable, Serializable {
+    private int points;
     private String name;
     private String color;
-    private final ArrayList<Piece> kills = new ArrayList<>();
+    protected final ArrayList<Piece> kills = new ArrayList<>();
     
     public Player(String n) {
         name = n;
@@ -37,16 +39,16 @@ public abstract class Player implements Comparable {
         this.color = color;
     }
 
-    public int getRank() {
-        return rank;
+    public int getPoints() {
+        return points;
     }
 
-    protected void setRank(int rank) {
-        this.rank = rank;
+    protected void setPoints(int points) {
+        this.points = points;
     }
     
     abstract void move(Game g);
-    abstract void calcRank(Game g);
+    abstract void calcPoints(Game g, boolean win);
 
     /*
     Makes sure there is a piece at the selected position on the board. 
@@ -315,13 +317,31 @@ public abstract class Player implements Comparable {
         }
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return compareTo(obj) == 0;
+    }
     
     @Override
     //Compare by player ranks.
     public int compareTo(Object o) {
         Player other = (Player) o;
-        if (getRank() > other.getRank()) return 1;
-        else if (getRank() < other.getRank()) return -1;
+        if (!getName().equals(other.getName())) {
+            if (getPoints() > other.getPoints()) return 1;
+            else if (getPoints() < other.getPoints()) return -1;
+            else {
+                if (hashCode() > other.hashCode()) return 1;
+                return -1;
+            }
+        }
         return 0;
     }
 }

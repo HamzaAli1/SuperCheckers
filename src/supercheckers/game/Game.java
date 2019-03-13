@@ -19,7 +19,7 @@ public class Game {
 
     public Game() {
         one = new HumanPlayer("Test Player", ""); //TODO maybe change this to a computer player later on to have some fun :)
-        two = new ComputerPlayer();
+        two = new ComputerPlayer(ComputerPlayer.EASY);
         one.setColor("red");
         two.setColor("black");
     }
@@ -31,7 +31,8 @@ public class Game {
         two.setColor("black");
     }
     
-    public void play() {
+    //returns winner
+    public Player play() {
         System.out.println("Starting Game...\n");
         board = new Board();
         double rand = Math.random();
@@ -57,12 +58,18 @@ public class Game {
             }
         }
         System.out.println("\n\n" + getBoard() + "\n");
-        if (board.getReds().isEmpty() || !one.canMove(this))
+        if (board.getReds().isEmpty() || !one.canMove(this)) {
             System.out.println("Black Wins!");
-        else if (board.getBlacks().isEmpty() || !two.canMove(this))
+            return two;
+        }
+        else if (board.getBlacks().isEmpty() || !two.canMove(this)) {
             System.out.println("Red Wins!");
-        else
+            return one;
+        }
+        else {
             System.out.println("Tie!");
+            return null;
+        }
     }
     
     public boolean canStillPlay() {
@@ -77,6 +84,14 @@ public class Game {
 
     public Board getBoard() {
         return board;
+    }
+
+    public Player getOne() {
+        return one;
+    }
+
+    public Player getTwo() {
+        return two;
     }
     
     //nonGUI game for debug

@@ -95,9 +95,19 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    void calcRank(Game g) {
-        int newRank = getRank();
-        //TODO: original rank + win/loss/tie + turnCount + opponentsRank + ...
-        setRank(newRank);
+    public void calcPoints(Game g, boolean win) {
+        int newRank = getPoints();
+        //original rank + win/loss + turnCount + opponentsRank + ...
+        newRank += (100/g.getBoard().getTurn());
+        if (getColor().equals("red"))
+            newRank += g.getTwo().getPoints()/4;
+        else
+            newRank += g.getOne().getPoints()/4;
+        if (win)
+            newRank += 100;
+        else
+            newRank += 10;
+        
+        setPoints(newRank);
     }
 }
