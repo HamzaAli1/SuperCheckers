@@ -44,18 +44,22 @@ public final class MainMenu extends javax.swing.JFrame {
     1 = change username
     2 = change password
     3 = pvp
-    4 = vs com */
+    4 = vs com
+    5 = pvp player 2 */
     private int loginPurpose;
     
     //instance of a game which gui calls
     private Game game;
+    
+    //second player for pvp match
+    private HumanPlayer p2;
         
     /**
      * Creates new form MainMenu
      */
     public MainMenu() {
         players = new TreeSet();
-        file2data();
+        file2data(); //read in data from dat file
         
         //fakeData(); //debug
         
@@ -66,6 +70,8 @@ public final class MainMenu extends javax.swing.JFrame {
         
         this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         this.setResizable(false);
+        
+        label_p2.setVisible(false); //for login purpose 5 only
     }
 
     /**
@@ -85,6 +91,7 @@ public final class MainMenu extends javax.swing.JFrame {
         label_passwordLogin = new javax.swing.JLabel();
         textField_username = new javax.swing.JTextField();
         textField_password = new javax.swing.JTextField();
+        label_p2 = new javax.swing.JLabel();
         Leaderboards = new javax.swing.JDialog();
         panel_leaderboards = new javax.swing.JPanel();
         scrollPane_leaderboards = new javax.swing.JScrollPane();
@@ -135,28 +142,37 @@ public final class MainMenu extends javax.swing.JFrame {
 
         label_passwordLogin.setText("Password");
 
+        label_p2.setText("Player Two Login/Sign Up");
+
         javax.swing.GroupLayout panel_loginLayout = new javax.swing.GroupLayout(panel_login);
         panel_login.setLayout(panel_loginLayout);
         panel_loginLayout.setHorizontalGroup(
             panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_loginLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_loginLayout.createSequentialGroup()
-                        .addComponent(button_login, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(button_signup, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(textField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(label_usernameLogin)
-                        .addComponent(label_passwordLogin)
-                        .addComponent(textField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(21, 21, 21)
+                        .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(panel_loginLayout.createSequentialGroup()
+                                .addComponent(button_login, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(button_signup, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(textField_username, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(label_usernameLogin)
+                                .addComponent(label_passwordLogin)
+                                .addComponent(textField_password, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(panel_loginLayout.createSequentialGroup()
+                        .addGap(127, 127, 127)
+                        .addComponent(label_p2)))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         panel_loginLayout.setVerticalGroup(
             panel_loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_loginLayout.createSequentialGroup()
-                .addGap(43, 43, 43)
+                .addGap(15, 15, 15)
+                .addComponent(label_p2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(label_usernameLogin)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(textField_username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -481,9 +497,9 @@ public final class MainMenu extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    //take user to leaderboard menu, which displays rankings.
     private void button_leaderboardsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_leaderboardsActionPerformed
-        //take user to leaderboard menu, which displays rankings.
         //start by populating table
         String[][] data = new String[players.size() + 1][3];
         String[] headers = {"Rank", "Player Name", "Points"};
@@ -510,7 +526,7 @@ public final class MainMenu extends javax.swing.JFrame {
         this.setEnabled(false);
     }//GEN-LAST:event_button_leaderboardsActionPerformed
 
-    //for debugging
+    //for debugging leaderboards
     private void fakeData() {
         players.clear();
         Player temp;
@@ -520,24 +536,26 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }
     
+    //-_-
     private void LeaderboardsWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosed
     }//GEN-LAST:event_LeaderboardsWindowClosed
 
+    //set main window visible after closing leaderboards
     private void LeaderboardsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosing
-        //set main window visible
         this.setEnabled(true);
     }//GEN-LAST:event_LeaderboardsWindowClosing
 
+    //save all ranking data to file
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         data2file();
     }//GEN-LAST:event_formWindowClosing
 
+    //-_-
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
     }//GEN-LAST:event_formWindowOpened
 
+    //opens up options menu
     private void button_optionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_optionsActionPerformed
-        //opens up options menu
-        
         //adjust window
         Options.setSize(408, 300);
         Options.setVisible(true);
@@ -546,14 +564,14 @@ public final class MainMenu extends javax.swing.JFrame {
         this.setEnabled(false);
     }//GEN-LAST:event_button_optionsActionPerformed
 
+    //set main window visible after closing options menu
     private void OptionsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_OptionsWindowClosing
-        //set main window visible
         this.setEnabled(true);
     }//GEN-LAST:event_OptionsWindowClosing
 
+    //lets user create new player account
     private void button_newPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_newPlayerActionPerformed
         //opens up signin menu, but disables login button (only sign up available)
-        
         //adjust window
         LoginPage.setSize(408, 300);
         LoginPage.setVisible(true);
@@ -564,6 +582,7 @@ public final class MainMenu extends javax.swing.JFrame {
         Options.setEnabled(false);
     }//GEN-LAST:event_button_newPlayerActionPerformed
 
+    //lets user change their password after logining in
     private void button_changePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_changePasswordActionPerformed
         //opens up signin menu, but disables sign up button (only login available)
         if (!textField_options.getText().isEmpty()) {
@@ -582,6 +601,7 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_changePasswordActionPerformed
 
+    //lets user change their username after logining in
     private void button_changeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_changeNameActionPerformed
         //opens up signin menu, but disables sign up button (only login available)
         if (!textField_options.getText().isEmpty()) {
@@ -600,16 +620,19 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_changeNameActionPerformed
 
+    //if loginpage is closed, sets any invisible pages to visible (based on loginpurpose)
     private void LoginPageWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LoginPageWindowClosing
         if (loginPurpose == 1 || loginPurpose == 2)
             Options.setEnabled(true);
-        else if (loginPurpose == 3 || loginPurpose == 4)
+        else if (loginPurpose == 3 || loginPurpose == 4 || loginPurpose == 5)
             PlayMenu.setEnabled(true);
         
         button_login.setEnabled(true);
         button_signup.setEnabled(true);
+        label_p2.setVisible(false);
     }//GEN-LAST:event_LoginPageWindowClosing
 
+    //adds new player to game, then either returns to previous menu or starts a new game
     private void button_signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_signupActionPerformed
         //adds inputted player to rankings
         String username = textField_username.getText(), password = textField_password.getText();
@@ -618,16 +641,21 @@ public final class MainMenu extends javax.swing.JFrame {
             if (!usernameTaken(username)) {
                 temp = new HumanPlayer(username, password);
                 players.add(temp);
-                
-                LoginPage.setVisible(false);
-                
-                if (loginPurpose == 1 || loginPurpose == 2)
+                                
+                if (loginPurpose == 1 || loginPurpose == 2) {
+                    LoginPage.setVisible(false);
                     Options.setEnabled(true);
+                }
                 else if (loginPurpose == 3) {
-                    //TODO:
+                    currentUser = temp;
+                    loginPurpose = 5;
+                    label_p2.setVisible(true);
                 }
                 else if (loginPurpose == 4) {
+                    LoginPage.setVisible(false);
                     play(temp);
+                } else if (loginPurpose == 5) {
+                    LoginPage.setVisible(false);
                 }
                 
                 button_login.setEnabled(true);
@@ -640,6 +668,7 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_signupActionPerformed
 
+    //logins as a user, then either returns to previous menu or starts a new game
     private void button_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_loginActionPerformed
         //sets inputted user as currentUser
         Player temp;
@@ -648,25 +677,28 @@ public final class MainMenu extends javax.swing.JFrame {
             temp = validUser(username, password);
             if (temp != null) {
                 currentUser = (HumanPlayer) temp;
-                
-                LoginPage.setVisible(false);
-                
+                                
                 if (loginPurpose == 1) {
+                    LoginPage.setVisible(false);
                     currentUser.setName(textField_options.getText());
                     Options.setEnabled(true);
-                }
-                else if (loginPurpose == 2) {
+                    currentUser = null;
+                } else if (loginPurpose == 2) {
+                    LoginPage.setVisible(false);
                     currentUser.setPassword(textField_options.getText());
                     Options.setEnabled(true);
-                }
-                else if (loginPurpose == 3) {
-                    //TODO:
+                    currentUser = null;
+                } else if (loginPurpose == 3) {
+                    loginPurpose = 5;
+                    label_p2.setVisible(true);
                 } else if (loginPurpose == 4) {
+                    LoginPage.setVisible(false);
                     play(currentUser);
+                } else if (loginPurpose == 5) {
+                    
                 }
 
-                button_login.setEnabled(true);
-                currentUser = null;
+                button_signup.setEnabled(true);
             }
             else {
                 //todo: error message
@@ -680,9 +712,8 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_loginActionPerformed
 
+    //opens up play menu, which lets user start a match
     private void button_playActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_playActionPerformed
-        //opens up play menu, which lets user start a match
-        
         //adjust window
         PlayMenu.setSize(408, 300);
         PlayMenu.setVisible(true);
@@ -691,15 +722,15 @@ public final class MainMenu extends javax.swing.JFrame {
         this.setEnabled(false);
     }//GEN-LAST:event_button_playActionPerformed
 
+    //set main window visible after closing play menu
     private void PlayMenuWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_PlayMenuWindowClosing
         //set main window visible
         this.setEnabled(true);
     }//GEN-LAST:event_PlayMenuWindowClosing
 
+    //starts a match against a computer player
     private void button_comActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_comActionPerformed
-        //starts a match against a computer player
-        
-        //adjust window
+            //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
             LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
@@ -709,6 +740,7 @@ public final class MainMenu extends javax.swing.JFrame {
             loginPurpose = 4;
     }//GEN-LAST:event_button_comActionPerformed
 
+    //confirms that an inputted username and password is correct
     private Player validUser(String user, String pass) {
         HumanPlayer temp;
         for (Player p : players) {
@@ -720,7 +752,8 @@ public final class MainMenu extends javax.swing.JFrame {
         }
         return null;
     }
-    
+
+    //checks if a username has already been taken
     private boolean usernameTaken(String n) {
         for (Player p : players) {
             if (p.getName().equals(n))
@@ -729,6 +762,7 @@ public final class MainMenu extends javax.swing.JFrame {
         return false;
     }
     
+    //saves all ranking data to file
     private void data2file() {
         //save all data before closing
         dm = new DataModel(players);
@@ -743,6 +777,7 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }
     
+    //pulls ranking data from file
     private void file2data() {
         //load data from dat file
         try {
@@ -835,6 +870,7 @@ public final class MainMenu extends javax.swing.JFrame {
     private javax.swing.JLabel label_help;
     private javax.swing.JLabel label_leaderboards;
     private javax.swing.JLabel label_options;
+    private javax.swing.JLabel label_p2;
     private javax.swing.JLabel label_passwordLogin;
     private javax.swing.JLabel label_play;
     private javax.swing.JLabel label_pvp;
