@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.TreeSet;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import misc.DataModel;
 import supercheckers.game.ComputerPlayer;
@@ -41,12 +42,13 @@ public final class MainMenu extends javax.swing.JFrame {
     private HumanPlayer currentUser;
     
     /*temp variable used to determine purpose for login:
+    0 = new player (only used by loginwindowclosed actionlistener)
     1 = change username
     2 = change password
     3 = pvp
     4 = vs com
     5 = pvp player 2 */
-    private int loginPurpose;
+    private int loginPurpose = -1;
     
     //instance of a game which gui calls
     private Game game;
@@ -59,9 +61,9 @@ public final class MainMenu extends javax.swing.JFrame {
      */
     public MainMenu() {
         players = new TreeSet();
-        file2data(); //read in data from dat file
         
-        //fakeData(); //debug
+        //file2data();
+        fakeData();
         
         initComponents();
         
@@ -359,6 +361,11 @@ public final class MainMenu extends javax.swing.JFrame {
         });
 
         button_pvp.setText("PvP");
+        button_pvp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_pvpActionPerformed(evt);
+            }
+        });
 
         button_com.setText("Vs. Computer");
         button_com.addActionListener(new java.awt.event.ActionListener() {
@@ -543,6 +550,7 @@ public final class MainMenu extends javax.swing.JFrame {
     //set main window visible after closing leaderboards
     private void LeaderboardsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosing
         this.setEnabled(true);
+        this.toFront();
     }//GEN-LAST:event_LeaderboardsWindowClosing
 
     //save all ranking data to file
@@ -567,6 +575,7 @@ public final class MainMenu extends javax.swing.JFrame {
     //set main window visible after closing options menu
     private void OptionsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_OptionsWindowClosing
         this.setEnabled(true);
+        this.toFront();
     }//GEN-LAST:event_OptionsWindowClosing
 
     //lets user create new player account
@@ -575,8 +584,10 @@ public final class MainMenu extends javax.swing.JFrame {
         //adjust window
         LoginPage.setSize(408, 300);
         LoginPage.setVisible(true);
-        LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
         LoginPage.setResizable(false);
+        
+        loginPurpose = 0;
         
         button_login.setEnabled(false);
         Options.setEnabled(false);
@@ -589,15 +600,14 @@ public final class MainMenu extends javax.swing.JFrame {
             //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
-            LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
             LoginPage.setResizable(false);
 
             button_signup.setEnabled(false);
             Options.setEnabled(false);
             loginPurpose = 2;
-            textField_options.setText("");
         } else {
-            //todo error
+            JOptionPane.showMessageDialog(Options, "Please enter new password into text field.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_button_changePasswordActionPerformed
 
@@ -608,28 +618,35 @@ public final class MainMenu extends javax.swing.JFrame {
             //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
-            LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
             LoginPage.setResizable(false);
 
             button_signup.setEnabled(false);
             Options.setEnabled(false);
             loginPurpose = 1;
-            textField_options.setText("");
         } else {
-            //todo error
+            JOptionPane.showMessageDialog(Options, "Please enter new username into text field.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_button_changeNameActionPerformed
 
     //if loginpage is closed, sets any invisible pages to visible (based on loginpurpose)
     private void LoginPageWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LoginPageWindowClosing
-        if (loginPurpose == 1 || loginPurpose == 2)
+        if (loginPurpose == 0 || loginPurpose == 1 || loginPurpose == 2) {
             Options.setEnabled(true);
-        else if (loginPurpose == 3 || loginPurpose == 4 || loginPurpose == 5)
+            Options.toFront();
+        }
+        else if (loginPurpose == 3 || loginPurpose == 4 || loginPurpose == 5) {
             PlayMenu.setEnabled(true);
-        
+            PlayMenu.toFront();
+        }
         button_login.setEnabled(true);
         button_signup.setEnabled(true);
         label_p2.setVisible(false);
+        
+        textField_options.setText("");
+        
+        currentUser = null;
+        p2 = null;
     }//GEN-LAST:event_LoginPageWindowClosing
 
     //adds new player to game, then either returns to previous menu or starts a new game
@@ -642,20 +659,28 @@ public final class MainMenu extends javax.swing.JFrame {
                 temp = new HumanPlayer(username, password);
                 players.add(temp);
                                 
-                if (loginPurpose == 1 || loginPurpose == 2) {
-                    LoginPage.setVisible(false);
-                    Options.setEnabled(true);
-                }
-                else if (loginPurpose == 3) {
+                if (loginPurpose == 3) {
                     currentUser = temp;
                     loginPurpose = 5;
                     label_p2.setVisible(true);
-                }
-                else if (loginPurpose == 4) {
+                } else if (loginPurpose == 4) {
                     LoginPage.setVisible(false);
+                    PlayMenu.setEnabled(true);
+                    PlayMenu.setVisible(false);
+                    
                     play(temp);
                 } else if (loginPurpose == 5) {
+                    p2 = temp;
+                    
+                    label_p2.setVisible(false);
                     LoginPage.setVisible(false);
+                    PlayMenu.setEnabled(true);
+                    PlayMenu.setVisible(false);
+                    
+                    play(currentUser, p2);
+                    
+                    currentUser = null;
+                    p2 = null;
                 }
                 
                 button_login.setEnabled(true);
@@ -675,40 +700,63 @@ public final class MainMenu extends javax.swing.JFrame {
         String username = textField_username.getText(), password = textField_password.getText();
         if (!username.isEmpty() && !password.isEmpty()) {
             temp = validUser(username, password);
-            if (temp != null) {
-                currentUser = (HumanPlayer) temp;
-                                
+            if (temp != null) {                                
                 if (loginPurpose == 1) {
+                    currentUser = (HumanPlayer) temp;
+                    
                     LoginPage.setVisible(false);
                     currentUser.setName(textField_options.getText());
+                    
+                    textField_options.setText("");
                     Options.setEnabled(true);
+                    Options.setVisible(true);
+                    Options.toFront();
                     currentUser = null;
                 } else if (loginPurpose == 2) {
+                    currentUser = (HumanPlayer) temp;
+                    
                     LoginPage.setVisible(false);
                     currentUser.setPassword(textField_options.getText());
+                    
+                    textField_options.setText("");
                     Options.setEnabled(true);
+                    Options.setVisible(true);
+                    Options.toFront();
                     currentUser = null;
                 } else if (loginPurpose == 3) {
+                    currentUser = (HumanPlayer) temp;
                     loginPurpose = 5;
                     label_p2.setVisible(true);
                 } else if (loginPurpose == 4) {
                     LoginPage.setVisible(false);
-                    play(currentUser);
+                    currentUser = (HumanPlayer) temp;
+                    play((currentUser));
+                    currentUser  = null;
                 } else if (loginPurpose == 5) {
+                    p2 = (HumanPlayer) temp;
                     
+                    label_p2.setVisible(false);
+                    LoginPage.setVisible(false);
+                    PlayMenu.setEnabled(true);
+                    PlayMenu.setVisible(false);
+                    
+                    play(currentUser, p2);
+                    
+                    currentUser = null;
+                    p2 = null;
                 }
 
                 button_signup.setEnabled(true);
             }
             else {
-                //todo: error message
+                JOptionPane.showMessageDialog(LoginPage, "Inputted user does not exist, try again or create a new user.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
             textField_username.setText("");
             textField_password.setText("");
         }
         else {
-            //todo: error message
+            JOptionPane.showMessageDialog(LoginPage, "Please enter username and password into the respective textfields.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_button_loginActionPerformed
 
@@ -726,6 +774,7 @@ public final class MainMenu extends javax.swing.JFrame {
     private void PlayMenuWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_PlayMenuWindowClosing
         //set main window visible
         this.setEnabled(true);
+        this.toFront();
     }//GEN-LAST:event_PlayMenuWindowClosing
 
     //starts a match against a computer player
@@ -733,12 +782,23 @@ public final class MainMenu extends javax.swing.JFrame {
             //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
-            LoginPage.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
             LoginPage.setResizable(false);
 
             PlayMenu.setEnabled(false);
             loginPurpose = 4;
     }//GEN-LAST:event_button_comActionPerformed
+
+    private void button_pvpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_pvpActionPerformed
+        //adjust window
+        LoginPage.setSize(408, 300);
+        LoginPage.setVisible(true);
+        LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        LoginPage.setResizable(false);
+
+        PlayMenu.setEnabled(false);
+        loginPurpose = 3;
+    }//GEN-LAST:event_button_pvpActionPerformed
 
     //confirms that an inputted username and password is correct
     private Player validUser(String user, String pass) {
