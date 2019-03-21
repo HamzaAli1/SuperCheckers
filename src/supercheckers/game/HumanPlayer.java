@@ -58,7 +58,7 @@ public class HumanPlayer extends Player {
                     chop.next();
                 }
             }
-            chop.nextLine();//TODO: why does this mess up when killMoves() is invoked?
+            chop.nextLine();
             //select new position (Note: the inputted moves MUST be in order. This will be accounted for in GUI)
             loop = true;
             System.out.println(getName() + ", select where to move your piece...");

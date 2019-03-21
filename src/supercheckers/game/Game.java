@@ -22,6 +22,9 @@ public class Game {
         two = new ComputerPlayer(ComputerPlayer.EASY);
         one.setColor("red");
         two.setColor("black");
+        
+        board = new Board();
+
     }
 
     public Game(Player one, Player two) {
@@ -29,15 +32,20 @@ public class Game {
         this.two = two;
         one.setColor("red");
         two.setColor("black");
+        
+        board = new Board();
     }
     
     //returns winner
     public Player play() {
         System.out.println("Starting Game...\n");
-        board = new Board();
+        
+        System.out.println(one.getName() + " is " + one.getColor());
+        System.out.println(two.getName() + " is " + two.getColor() + "\n");
+        
         double rand = Math.random();
         if (rand < 0.5) { //TODO: make this random turn order part more efficient (seems redundant)
-            System.out.println("Player 1 Starts!");
+            System.out.println(one.getName() + " Starts!");
             while (canStillPlay()) {
                 System.out.println("\n" + getBoard());
                 if (board.getTurn() % 2 == 0)
@@ -47,7 +55,7 @@ public class Game {
                 board.turnUp();
             }
         } else {
-            System.out.println("Player 2 Starts!");
+            System.out.println(two.getName() + " Starts!");
             while (canStillPlay()) {
                 System.out.println("\n" + getBoard());
                 if (board.getTurn() % 2 == 0)

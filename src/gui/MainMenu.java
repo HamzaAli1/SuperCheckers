@@ -685,7 +685,7 @@ public final class MainMenu extends javax.swing.JFrame {
                 
                 button_login.setEnabled(true);
             } else {
-                //error username taken
+                JOptionPane.showMessageDialog(LoginPage, "Inputted username already taken, please enter a different one.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
             textField_username.setText("");
