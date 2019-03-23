@@ -5,6 +5,7 @@
  */
 package supercheckers.game;
 
+import gui.GamePanel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -47,7 +48,13 @@ public abstract class Player implements Comparable, Serializable {
         this.points = points;
     }
     
+    //makes a move for a player
     abstract void move(Game g);
+    
+    //connects with front end instead of printing
+    abstract void move(Game g, GamePanel panel) throws InterruptedException;
+    
+    //adjusts players points after a match
     abstract void calcPoints(Game g, boolean win);
 
     /*
@@ -80,6 +87,33 @@ public abstract class Player implements Comparable, Serializable {
             }
         }
         System.out.println("No piece found at point. Please try again.");
+        return null;
+    }
+    
+    protected Piece validPiece(Game g, String in, GamePanel panel) throws InterruptedException {
+        if (!kills.isEmpty()) {
+            for (Piece p : kills) {
+                if (p.getRow() == Character.getNumericValue(in.charAt(0)) && p.getColumn() == Character.getNumericValue(in.charAt(2)))
+                    return p;
+            }
+            panel.setGameOutput("You have a capture available that you have to make.");
+            return null;
+        }
+        
+        if (getColor().equals("red")) {
+            for (Piece p : g.getBoard().getReds()) {
+                if (p.getRow() == Character.getNumericValue(in.charAt(0)) && p.getColumn() == Character.getNumericValue(in.charAt(2))) {
+                    return p;
+                }
+            }
+        } else /*if black*/ {
+            for (Piece p : g.getBoard().getBlacks()) {
+                if (p.getRow() == Character.getNumericValue(in.charAt(0)) && p.getColumn() == Character.getNumericValue(in.charAt(2))) {
+                    return p;
+                }
+            }
+        }
+        panel.setGameOutput("No piece found at point. Please try again.");
         return null;
     }
     

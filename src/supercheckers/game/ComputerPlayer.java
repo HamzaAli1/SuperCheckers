@@ -5,6 +5,8 @@
  */
 package supercheckers.game;
 
+import gui.GamePanel;
+
 /**
  *
  * @author Hamza Ali
@@ -89,5 +91,10 @@ public final class ComputerPlayer extends Player {
     @Override
     void calcPoints(Game g, boolean win) { //change this later?!?
         setPoints(rank);
+    }
+
+    @Override
+    void move(Game g, GamePanel panel) {
+        //TODO
     }
 }

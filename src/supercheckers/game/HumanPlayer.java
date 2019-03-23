@@ -5,6 +5,7 @@
  */
 package supercheckers.game;
 
+import gui.GamePanel;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -87,6 +88,86 @@ public class HumanPlayer extends Player {
             else {
                 loop = true;
                 selected = null;
+            }
+        }
+        clearKillMoves();
+        if (selected != null)
+            selected.move(moves, g);
+    }
+    
+    
+    @Override
+    void move(Game g, GamePanel panel) throws InterruptedException {
+        killMoves(g);
+        boolean loop = true, confirmed = false;
+        String input;
+        Piece selected = null;
+        String[] moves = null;
+        
+        panel.reset();
+        
+        while (!confirmed) {
+            //select piece
+            panel.resetSelected();
+            panel.resetMove();
+            while (loop) {
+                while (!panel.confirmed()) {
+                    if (panel.getPaintPurpose() != 1) {
+                        panel.setGameOutput(getName() + ", select a piece...");
+                        Thread.sleep(1000);
+                        panel.setPaintPurpose(1);
+                    }
+                    Thread.sleep(50);
+                }
+                try {
+                    input = panel.getSelectedPiece();
+                    selected = validPiece(g, input, panel);
+                    loop = selected == null || !pieceCanMove(g, selected, getColor());
+                } catch (InputMismatchException e) {
+                    panel.setGameOutput("Please select a valid piece...");
+                }
+                if (selected != null && !pieceCanMove(g, selected, getColor())) {
+                    panel.setGameOutput("Please select a valid piece...");
+                }
+                if (loop) panel.resetSelected();
+                Thread.sleep(1000);
+                panel.reset();
+            }
+            //select new position (Note: the inputted moves MUST be in order. This will be accounted for in GUI)
+            loop = true;
+            while (loop) {
+                while (!panel.confirmed()) {
+                    if (panel.getPaintPurpose() != 3) {
+                        panel.setGameOutput(getName() + ", select where to move your piece...");
+                        Thread.sleep(1000);
+                        panel.setPaintPurpose(3);
+                    }
+                    Thread.sleep(50);
+                }
+                input = panel.getMove();
+                if (input.matches("([0-8],[0-8] ?)+")) {
+                    moves = input.split("[ ,]");
+                    loop = !validMove(g, moves, selected);
+                }
+                if (loop) {
+                    panel.setGameOutput("Selected move not valid, please try again.");
+                    panel.resetMove();
+                }
+                Thread.sleep(1000);
+                panel.reset();
+            }
+            //confirm move (y/n)
+            while (!panel.finalConfirm()) {
+                if (panel.getPaintPurpose() != 4)
+                    panel.setPaintPurpose(4);
+                Thread.sleep(50);
+            }
+            if (panel.confirmed()) {
+                confirmed = true;
+            } else {
+                loop = true;
+                selected = null;
+                panel.reset();
             }
         }
         clearKillMoves();

@@ -5,15 +5,17 @@
  */
 package supercheckers.game;
 
+import gui.GamePanel;
+
 /**
  *
  * @author Hamza Ali
  */
 public class Game {
     
-    private Board board;
+    private final Board board;
     
-    //one is red (going up), two is black (going down); this fact while be made obvious in the GUI
+    //one is red, two is black; this fact while be made obvious in the GUI
     private final Player one;
     private final Player two;
 
@@ -36,7 +38,7 @@ public class Game {
         board = new Board();
     }
     
-    //returns winner
+    //starts game, returns winner
     public Player play() {
         System.out.println("Starting Game...\n");
         
@@ -76,6 +78,53 @@ public class Game {
         }
         else {
             System.out.println("Tie!");
+            return null;
+        }
+    }
+    
+    //connects with front end gui instead of printing
+    public Player play(GamePanel panel) throws InterruptedException {
+        panel.setGameOutput("Starting Game...");
+        Thread.sleep(2000);
+        
+        panel.setGameOutput(one.getName() + " is " + one.getColor() + ", and " + two.getName() + " is " + two.getColor());
+        Thread.sleep(3500);
+        
+        double rand = Math.random();
+        if (rand < 0.5) {
+            panel.setGameOutput(one.getName() + " starts!");
+            Thread.sleep(2000);
+            while (canStillPlay()) {
+                panel.repaint();
+                if (board.getTurn() % 2 == 0)
+                    one.move(this, panel);
+                else
+                    two.move(this, panel);
+                board.turnUp();
+            }
+        } else {
+            panel.setGameOutput(two.getName() + " starts!");
+            Thread.sleep(2000);
+            while (canStillPlay()) {
+                panel.repaint();
+                if (board.getTurn() % 2 == 0)
+                    two.move(this, panel);
+                else
+                    one.move(this, panel);
+                board.turnUp();
+            }
+        }
+        panel.repaint();
+        if (board.getReds().isEmpty() || !one.canMove(this)) {
+            panel.setGameOutput("Black Wins!");
+            return two;
+        }
+        else if (board.getBlacks().isEmpty() || !two.canMove(this)) {
+            panel.setGameOutput("Red Wins!");
+            return one;
+        }
+        else {
+            panel.setGameOutput("Tie!");
             return null;
         }
     }
