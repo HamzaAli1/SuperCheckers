@@ -18,15 +18,19 @@ public class Game {
     //one is red, two is black; this fact while be made obvious in the GUI
     private final Player one;
     private final Player two;
+    
+    //how long a match can go before it has to end
+    private final int turnLimit;
 
     public Game() {
-        one = new HumanPlayer("Test Player", ""); //TODO maybe change this to a computer player later on to have some fun :)
-        two = new ComputerPlayer(ComputerPlayer.EASY);
+        one = new ComputerPlayer("test1");
+        two = new ComputerPlayer("test2");
         one.setColor("red");
         two.setColor("black");
         
+        turnLimit = 1000;
+        
         board = new Board();
-
     }
 
     public Game(Player one, Player two) {
@@ -34,6 +38,8 @@ public class Game {
         this.two = two;
         one.setColor("red");
         two.setColor("black");
+        
+        turnLimit = 100;
         
         board = new Board();
     }
@@ -116,11 +122,11 @@ public class Game {
         }
         panel.repaint();
         if (board.getReds().isEmpty() || !one.canMove(this)) {
-            panel.setGameOutput("Black Wins!");
+            panel.setGameOutput(two.getName() + " (Black) Wins!");
             return two;
         }
         else if (board.getBlacks().isEmpty() || !two.canMove(this)) {
-            panel.setGameOutput("Red Wins!");
+            panel.setGameOutput(one.getName() + " (Red) Wins!");
             return one;
         }
         else {
@@ -130,7 +136,7 @@ public class Game {
     }
     
     public boolean canStillPlay() {
-        if (board.getTurn() < 100) {
+        if (board.getTurn() < turnLimit) {
             if (board.getReds().size() > 0 && board.getBlacks().size() > 0) {
                 if (one.canMove(this) && two.canMove(this))
                     return true;
@@ -153,8 +159,12 @@ public class Game {
     
     //nonGUI game for debug
     public static void main(String[] args) {
-        Player one = new HumanPlayer("test1", ""), two = new HumanPlayer("test2", "");
-        Game test = new Game(one, two);
+        //human match
+        //Player one = new HumanPlayer("test1", ""), two = new HumanPlayer("test2", "");
+        //Game test = new Game(one, two);
+        
+        //com match
+        Game test = new Game();
         test.play();
     }
 }

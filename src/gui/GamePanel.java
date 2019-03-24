@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Panel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import supercheckers.game.Game;
 import supercheckers.game.HumanPlayer;
 import supercheckers.game.Piece;
@@ -28,7 +28,7 @@ import supercheckers.game.Player;
  *
  * @author Hamza Ali
  */
-public class GamePanel extends Panel {
+public class GamePanel extends JPanel {
     
     //panel manages game
     private final Game game;
@@ -341,8 +341,12 @@ public class GamePanel extends Panel {
     }
     
     public static void main(String[] args) throws InterruptedException {
+        //human match
         Player one = new HumanPlayer("test1", ""), two = new HumanPlayer("test2", "");
-        Game game = new Game(one, two);
+        //Game game = new Game(one, two);
+        
+        //com match
+        Game game = new Game();
         
         JFrame window = new JFrame();
         GamePanel test = new GamePanel(game);
@@ -387,5 +391,9 @@ public class GamePanel extends Panel {
         
         //start game
         test.play();
+        
+        Thread.sleep(2500);
+        
+        window.dispose();
     }
 }

@@ -8,6 +8,8 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.TreeSet;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import misc.DataModel;
@@ -50,9 +53,6 @@ public final class MainMenu extends javax.swing.JFrame {
     5 = pvp player 2 */
     private int loginPurpose = -1;
     
-    //instance of a game which gui calls
-    private Game game;
-    
     //second player for pvp match
     private HumanPlayer p2;
         
@@ -62,8 +62,8 @@ public final class MainMenu extends javax.swing.JFrame {
     public MainMenu() {
         players = new TreeSet();
         
-        //file2data();
-        fakeData();
+        file2data();
+        //fakeData(); //debug only
         
         initComponents();
         
@@ -530,7 +530,7 @@ public final class MainMenu extends javax.swing.JFrame {
         Leaderboards.setMinimumSize(new Dimension(408,300));
         Leaderboards.setVisible(true);
         Leaderboards.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
-        this.setEnabled(false);
+        this.setVisible(false);
     }//GEN-LAST:event_button_leaderboardsActionPerformed
 
     //for debugging leaderboards
@@ -549,7 +549,7 @@ public final class MainMenu extends javax.swing.JFrame {
 
     //set main window visible after closing leaderboards
     private void LeaderboardsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosing
-        this.setEnabled(true);
+        this.setVisible(true);
         this.toFront();
     }//GEN-LAST:event_LeaderboardsWindowClosing
 
@@ -569,12 +569,12 @@ public final class MainMenu extends javax.swing.JFrame {
         Options.setVisible(true);
         Options.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
         Options.setResizable(false);
-        this.setEnabled(false);
+        this.setVisible(false);
     }//GEN-LAST:event_button_optionsActionPerformed
 
     //set main window visible after closing options menu
     private void OptionsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_OptionsWindowClosing
-        this.setEnabled(true);
+        this.setVisible(true);
         this.toFront();
     }//GEN-LAST:event_OptionsWindowClosing
 
@@ -590,7 +590,7 @@ public final class MainMenu extends javax.swing.JFrame {
         loginPurpose = 0;
         
         button_login.setEnabled(false);
-        Options.setEnabled(false);
+        Options.setVisible(false);
     }//GEN-LAST:event_button_newPlayerActionPerformed
 
     //lets user change their password after logining in
@@ -604,7 +604,7 @@ public final class MainMenu extends javax.swing.JFrame {
             LoginPage.setResizable(false);
 
             button_signup.setEnabled(false);
-            Options.setEnabled(false);
+            Options.setVisible(false);
             loginPurpose = 2;
         } else {
             JOptionPane.showMessageDialog(Options, "Please enter new password into text field.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -622,7 +622,7 @@ public final class MainMenu extends javax.swing.JFrame {
             LoginPage.setResizable(false);
 
             button_signup.setEnabled(false);
-            Options.setEnabled(false);
+            Options.setVisible(false);
             loginPurpose = 1;
         } else {
             JOptionPane.showMessageDialog(Options, "Please enter new username into text field.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -632,11 +632,11 @@ public final class MainMenu extends javax.swing.JFrame {
     //if loginpage is closed, sets any invisible pages to visible (based on loginpurpose)
     private void LoginPageWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LoginPageWindowClosing
         if (loginPurpose == 0 || loginPurpose == 1 || loginPurpose == 2) {
-            Options.setEnabled(true);
+            Options.setVisible(true);
             Options.toFront();
         }
         else if (loginPurpose == 3 || loginPurpose == 4 || loginPurpose == 5) {
-            PlayMenu.setEnabled(true);
+            PlayMenu.setVisible(true);
             PlayMenu.toFront();
         }
         button_login.setEnabled(true);
@@ -665,19 +665,25 @@ public final class MainMenu extends javax.swing.JFrame {
                     label_p2.setVisible(true);
                 } else if (loginPurpose == 4) {
                     LoginPage.setVisible(false);
-                    PlayMenu.setEnabled(true);
                     PlayMenu.setVisible(false);
                     
-                    play(temp);
+                    try {
+                        play(temp);
+                    } catch (InterruptedException ex) {
+                        JOptionPane.showMessageDialog(LoginPage, "Error playing game... " + ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 } else if (loginPurpose == 5) {
                     p2 = temp;
                     
                     label_p2.setVisible(false);
                     LoginPage.setVisible(false);
-                    PlayMenu.setEnabled(true);
                     PlayMenu.setVisible(false);
                     
-                    play(currentUser, p2);
+                    try {
+                        play(currentUser, p2);
+                    } catch (InterruptedException ex) {
+                        JOptionPane.showMessageDialog(LoginPage, "Error playing game... " + ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                     
                     currentUser = null;
                     p2 = null;
@@ -693,7 +699,7 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_signupActionPerformed
 
-    //logins as a user, then either returns to previous menu or starts a new game
+    //logins as a user, then either returns to previous menu or starts a new game TODO: make sure you can't login in as the same person twice!!!
     private void button_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_loginActionPerformed
         //sets inputted user as currentUser
         Player temp;
@@ -708,7 +714,6 @@ public final class MainMenu extends javax.swing.JFrame {
                     currentUser.setName(textField_options.getText());
                     
                     textField_options.setText("");
-                    Options.setEnabled(true);
                     Options.setVisible(true);
                     Options.toFront();
                     currentUser = null;
@@ -719,7 +724,6 @@ public final class MainMenu extends javax.swing.JFrame {
                     currentUser.setPassword(textField_options.getText());
                     
                     textField_options.setText("");
-                    Options.setEnabled(true);
                     Options.setVisible(true);
                     Options.toFront();
                     currentUser = null;
@@ -730,17 +734,24 @@ public final class MainMenu extends javax.swing.JFrame {
                 } else if (loginPurpose == 4) {
                     LoginPage.setVisible(false);
                     currentUser = (HumanPlayer) temp;
-                    play((currentUser));
+                    try {
+                        play((currentUser));
+                    } catch (InterruptedException ex) {
+                        JOptionPane.showMessageDialog(LoginPage, "Error playing game... " + ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                     currentUser  = null;
                 } else if (loginPurpose == 5) {
                     p2 = (HumanPlayer) temp;
                     
                     label_p2.setVisible(false);
                     LoginPage.setVisible(false);
-                    PlayMenu.setEnabled(true);
                     PlayMenu.setVisible(false);
                     
-                    play(currentUser, p2);
+                    try {
+                        play(currentUser, p2);
+                    } catch (InterruptedException ex) {
+                        JOptionPane.showMessageDialog(LoginPage, "Error playing game... " + ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                     
                     currentUser = null;
                     p2 = null;
@@ -767,13 +778,13 @@ public final class MainMenu extends javax.swing.JFrame {
         PlayMenu.setVisible(true);
         PlayMenu.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
         PlayMenu.setResizable(false);
-        this.setEnabled(false);
+        this.setVisible(false);
     }//GEN-LAST:event_button_playActionPerformed
 
     //set main window visible after closing play menu
     private void PlayMenuWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_PlayMenuWindowClosing
         //set main window visible
-        this.setEnabled(true);
+        this.setVisible(true);
         this.toFront();
     }//GEN-LAST:event_PlayMenuWindowClosing
 
@@ -785,7 +796,7 @@ public final class MainMenu extends javax.swing.JFrame {
             LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
             LoginPage.setResizable(false);
 
-            PlayMenu.setEnabled(false);
+            PlayMenu.setVisible(false);
             loginPurpose = 4;
     }//GEN-LAST:event_button_comActionPerformed
 
@@ -796,7 +807,7 @@ public final class MainMenu extends javax.swing.JFrame {
         LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
         LoginPage.setResizable(false);
 
-        PlayMenu.setEnabled(false);
+        PlayMenu.setVisible(false);
         loginPurpose = 3;
     }//GEN-LAST:event_button_pvpActionPerformed
 
@@ -856,20 +867,116 @@ public final class MainMenu extends javax.swing.JFrame {
     }
     
     //vs computer
-    private void play(HumanPlayer p) {
-        ComputerPlayer com = new ComputerPlayer(ComputerPlayer.EASY);
-        game = new Game(p, com);
+    private void play(HumanPlayer p) throws InterruptedException {
+        //set up game
+        ComputerPlayer com = new ComputerPlayer("test");
+        //Game game = new Game(p, com);
         
-        game.play();
+        Game game = new Game();
         
-        //TODO: maybe calc points? probably not.
+        //set up window
+        JFrame window = new JFrame();
+        GamePanel panel = new GamePanel(game);
+        window.add(panel);
+        
+        Dimension dms = new Dimension(800, 940); //board is only 800, 840
+        window.setSize(dms);
+        window.setMinimumSize(dms);
+        window.setResizable(false);
+        window.setVisible(true);
+        window.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                window.dispose();
+                toFront();
+                setVisible(true);
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
+                        
+        //start game       
+        panel.play();
+        
+        window.dispose();
+        toFront();
+        setVisible(true);
     }
     
-    //pvp
-    private void play(HumanPlayer one, HumanPlayer two) {
-        game = new Game(one, two);
-        Player temp = game.play();
+    //pvp TODO whyyyyyyyyyyyyy
+    private void play(HumanPlayer one, HumanPlayer two) throws InterruptedException {
+        //set up game
+        Game game = new Game(one, two);
         
+        //set up window
+        JFrame window = new JFrame();
+        GamePanel panel = new GamePanel(game);
+        window.add(panel);
+        
+        Dimension dms = new Dimension(800, 940); //board is only 800, 840
+        window.setSize(dms);
+        window.setMinimumSize(dms);
+        window.setResizable(false);
+        window.setVisible(true);
+        window.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                window.dispose();
+                toFront();
+                setVisible(true);
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
+                        
+        //start game       
+        Player temp = panel.play();
+        
+        //calc points
         if (temp.equals(one)) {
             one.calcPoints(game, true);
             two.calcPoints(game, false);
@@ -880,6 +987,11 @@ public final class MainMenu extends javax.swing.JFrame {
             one.calcPoints(game, false);
             two.calcPoints(game, false);
         }
+        
+        //close window
+        window.dispose();
+        toFront();
+        setVisible(true);
     }
     
     /**
