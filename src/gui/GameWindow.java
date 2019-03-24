@@ -18,15 +18,30 @@ import supercheckers.game.Player;
  */
 public class GameWindow extends JFrame {
     
+    /**
+     * GamePanel to be added to JFrame
+     */
     private final GamePanel panel;
+    
+    /**
+     * temp variable used to set main menu visible should the window close prematurely
+     */
     private final MainMenu menu;
     
+    /**
+     * main constructor, creates a new GameWindow
+     * @param g Game to be played
+     * @param m MainMenu window is being accessed from
+     */
     public GameWindow(Game g, MainMenu m) {
         panel = new GamePanel(g);
         menu = m;
         setUp();
     }
     
+    /**
+     * sets up window dimensions, listeners, etc.
+     */
     private void setUp() {
         add(panel);
         
@@ -68,6 +83,11 @@ public class GameWindow extends JFrame {
         });
     }
     
+    /**
+     * plays game, returns winner
+     * @return the Player that won
+     * @throws InterruptedException 
+     */
     public Player play() throws InterruptedException {
         return panel.play();
     }

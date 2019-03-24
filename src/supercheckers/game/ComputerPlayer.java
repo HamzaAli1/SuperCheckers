@@ -14,15 +14,37 @@ import java.util.ArrayList;
  */
 public final class ComputerPlayer extends Player {
     
-    private final int rank = 10;
+    /**
+     * the set point value of the com player
+     */
+    private final int pointValue = 10;
+    
+    /**
+     * the delay (in milliseconds) the computer must make between moves
+     */
     private final int delay;
     
+    /**
+     * main constructor, creates a new computer player
+     * @param n name of the player
+     * @param d delay
+     */
     public ComputerPlayer(String n, int d) {
         super(n + "_COM");
         calcPoints(null, false);
         delay = d;
     }
     
+    /**
+     * Logic:
+     * for (every piece computer has) {
+     *      if (any of its moves can kill a piece)
+     *           make that move (pick randomly if there are multiple)
+     *      return;
+     * }
+     * make a random move
+     * @param g instance of the Game
+     */
     @Override
     void move(Game g) {
         System.out.println("Computer is making its move...");
@@ -69,6 +91,10 @@ public final class ComputerPlayer extends Player {
         System.out.println("Computer has made a move.");
     }
     
+    /**
+     * @param g instance of the Game
+     * @return a random piece that can move
+     */
     private Piece getRandPiece(Game g) {
         ArrayList<Piece> iterator, temp = new ArrayList<>();
         if (getColor().equals("red"))
@@ -81,20 +107,23 @@ public final class ComputerPlayer extends Player {
         }
         return temp.get((int)(temp.size() * Math.random()));
     }
-    
-    /*
-    for (every piece computer has)
-        if (any of its moves can kill a piece)
-            make the move that kills the most
-            return
-    make a move that moves a piece closest to the other side of the board || make a random move
-    */
 
+    /**
+     * sets points to value dictated by the pointValue variable
+     * @param g
+     * @param win 
+     */
     @Override
     public void calcPoints(Game g, boolean win) {
-        setPoints(rank);
+        setPoints(pointValue);
     }
 
+    /**
+     * move method used to interact with front end
+     * @param g instance of the Game
+     * @param panel panel used by front end
+     * @throws InterruptedException 
+     */
     @Override
     void move(Game g, GamePanel panel) throws InterruptedException {
         panel.resetSelected();

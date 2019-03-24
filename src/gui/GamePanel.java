@@ -30,41 +30,63 @@ import supercheckers.game.Player;
  */
 public class GamePanel extends JPanel {
     
-    //panel manages game
+    /**
+     * back end game, panel acts as link b/w front end and back end
+     */
     private final Game game;
     
-    /* determines what the paint/repaint method does
-    0 = default, just paints board
-    1 = higlights a space on the board (cyan)
-    2 = prints something out in text box
-    3 = selecting spaces for a move (highlights in yellow)
-    4 = confirm final move; only paints button */
+    /**
+     * determines what the paint/repaint method does
+     * 0 = default, just paints board
+     * 1 = highlights a space on the board (cyan)
+     * 2 = prints something out in text box
+     * 3 = selecting spaces for a move (highlights in yellow)
+     * 4 = confirm final move; only paints button
+     */
     private int paintPurpose;
     
-    //used to track what has been selected, only used to keep said piece highlighted during paintPurpose 3
+    /**
+     * used to track what has been selected, only used to keep said piece highlighted during paintPurpose 3
+     */
     private String piece = "";
     
-    //used for paintPurpose 3 to select a space/spaces to move to.
+    /**
+     * used for paintPurpose 3 to select a space/spaces to move to.
+     */
     private String move = "";
     
-    //tracks mouse position for highlight methods
+    /**
+     * tracks mouse position for highlight methods
+     */
     private int mouseX = -1;
     private int mouseY = -1;
     
-    //used to print output from game
+    /**
+     * used to print output from game
+     */
     private String gameOutput;
     
-    //for pieces; regular red and black for board, light red and dark gray for pieces
+    /**
+     * for pieces; regular red and black for board, light red and dark gray for pieces
+     */
     private static final Color LIGHT_RED = new Color(255, 102, 102);
     
-    //control buttons
+    /**
+     * controls buttons
+     */
     private boolean buttonActive = false;
     private boolean buttonPressed = false;
     private boolean finalButtonPressed = false;
     
-    //holds image for a double piece
+    /**
+     * holds image for a double piece
+     */
     private final BufferedImage img_double = loadCrown();
     
+    /**
+     * default constructor, probably won't be used
+     * sets up a com match to be played in the panel
+     */
     public GamePanel () {
         super();
         game = new Game();
@@ -73,6 +95,10 @@ public class GamePanel extends JPanel {
         initComponents();
     }
     
+    /**
+     * main constructor, creates a new GamePanel
+     * @param g the game to be played in the panel
+     */
     public GamePanel (Game g) {
         super();
         game = g;
@@ -81,6 +107,9 @@ public class GamePanel extends JPanel {
         initComponents();
     }
     
+    /**
+     * initializes window listeners
+     */
     private void initComponents() {
         addMouseListener(new MouseListener() {
             @Override
@@ -125,12 +154,18 @@ public class GamePanel extends JPanel {
         });
     }
     
-    //plays game, returns winner
+    /**
+     * plays game, returns winner
+     * @return the Player that won
+     * @throws java.lang.InterruptedException
+     */
     public Player play() throws InterruptedException {
         return game.play(this);
     }
     
-    //repaints board, removing button and any highlights
+    /**
+     * repaints board, removing button (via boolean values)
+     */
     public void reset() {
         paintPurpose = 0;
         buttonPressed = false;
@@ -139,50 +174,80 @@ public class GamePanel extends JPanel {
         repaint();
     }
     
-    //returns selected piece
+    /**
+     * @return the selected piece
+     */
     public String getSelectedPiece() {
         if (mouseX == -1 || mouseY == -1)
             return "";
         return mouseX/100 + "," + mouseY/100;
     }
     
-    //returns selected piece
+    /**
+     * @return the selected move
+     */
     public String getMove() {
         return move;
     }
     
+    /**
+     * Sets the paintPurpose of the panel, used to paint panel from backend
+     * @param paintPurpose 
+     */
     public void setPaintPurpose(int paintPurpose) {
         this.paintPurpose = paintPurpose;
     }
 
+    /**
+     * @return the current paintPurpose of the panel
+     */
     public int getPaintPurpose() {
         return paintPurpose;
     }
 
+    /**
+     * prints a String onto the panel
+     * @param gameOutput the String to be printed
+     */
     public void setGameOutput(String gameOutput) {
         this.gameOutput = gameOutput;
         paintPurpose = 2;
         repaint(0, 800, 800, 100);
     }
     
+    /**
+     * @return whether or not the painted button has been pressed
+     */
     public boolean confirmed() {
         return buttonPressed;
     }
     
+    /**
+     * @return whether or not the final confirmation button has been pressed
+     */
     public boolean finalConfirm() {
         return finalButtonPressed;
     }
     
-    //resets piece
+    /**
+     * resets the value of piece
+     */
     public void resetSelected() {
         piece = "";
     }
     
-    //resets move
+    /**
+     * resets the value of move
+     */
     public void resetMove() {
         move = "";
     }
     
+    /**
+     * paints the checkers board and pieces onto the panel. Additionally, 
+     * depending on the paintPurpose, it can also print words onto the bottom of 
+     * the board, highlight certain spaces, or paint a confirmation button on the bottom right
+     */
     @Override
     public void paint(Graphics g) {
         paintBoard(g);
@@ -225,7 +290,11 @@ public class GamePanel extends JPanel {
         paintPieces(g);        
     }
     
-    //prints text at bottom of board
+    /**
+     * paints a String on the bottom of the panel
+     * @param g graphics context
+     * @param text String to be painted
+     */
     private void paintText(Graphics g, String text) {
         g.setColor(Color.DARK_GRAY);
         g.fillRect(0, 800, 800, 100);
@@ -234,7 +303,10 @@ public class GamePanel extends JPanel {
         g.drawString(text, 100, 860);
     }
     
-    //paints board
+    /**
+     * paints the board
+     * @param g graphics context
+     */
     private void paintBoard(Graphics g) {
         for (int r = 0; r < 800; r+=100) {
             for (int c = 0; c < 800; c+=100) {
@@ -254,7 +326,10 @@ public class GamePanel extends JPanel {
         }   
     }
     
-    //paints pieces
+    /**
+     * paints the pieces
+     * @param g graphics context
+     */
     private void paintPieces(Graphics g) {
         Piece temp;
         for (int r = 0; r < 8; r++) {
@@ -276,12 +351,20 @@ public class GamePanel extends JPanel {
         }
     }
     
-    //paints crown onto double pieces
+    /**
+     * paints a crown on a piece
+     * @param g graphics context
+     * @param x x-coordinate of piece
+     * @param y y-coordinate of piece
+     */
     private void paintDouble(Graphics g, int x, int y) {
         g.drawImage(img_double, x, y, null);
     }
     
-    //loads crown png
+    /**
+     * loads the image of a crown
+     * @return the loaded image
+     */
     private BufferedImage loadCrown() {
         BufferedImage img = null;
         try {
@@ -290,7 +373,10 @@ public class GamePanel extends JPanel {
         return img;
     }
     
-    //paints button used to confirm certain actions
+    /**
+     * paints the confirmation button
+     * @param g graphics context
+     */
     private void paintButton(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(647, 824, 116, 56);
@@ -301,7 +387,10 @@ public class GamePanel extends JPanel {
         buttonActive = true;
     }
     
-    //for move finalization
+    /**
+     * paints the final confirmation button
+     * @param g graphics context
+     */
     private void paintFinalButton(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(645, 824, 120, 56);
@@ -315,6 +404,11 @@ public class GamePanel extends JPanel {
         buttonActive = true;
     }
     
+    /**
+     * locates the piece clicked on by the mouse
+     * @param x mouse x coordinate
+     * @param y mouse y coordinate
+     */
     private void highlightSquare(int x, int y) {
         if (y > 799) {
             repaint();

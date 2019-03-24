@@ -15,26 +15,42 @@ import java.util.Scanner;
  */
 public class HumanPlayer extends Player {
 
+    /**
+     * password used to login as player
+     */
     private String password;
 
+    /**
+     * main constructor, creates a new HumanPlayer
+     * @param n name
+     * @param p password
+     */
     public HumanPlayer(String n, String p) {
         super(n);
         password = p;
     }
 
+    /**
+     * @return password
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * sets password
+     * @param password new password
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /*
-    Method that actually makes player's move. First asks for a piece to move, 
-    then asks for a postion to move the piece to. Multiple "hops" are possible 
-    by inputting multiple r,c pairs seperated by spaces. After both are inputted,
-    move is validated before being executed.
+    /**
+     * Method that actually makes player's move. First asks for a piece to move, 
+     * then asks for a position to move the piece to. Multiple "hops" are possible 
+     * by inputting multiple r,c pairs separated by spaces. After both are inputted,
+     * move is validated before being executed.
+     * @param g instance of the Game
      */
     @Override
     void move(Game g) {
@@ -94,7 +110,12 @@ public class HumanPlayer extends Player {
             selected.move(moves, g);
     }
     
-    
+    /**
+     * move method used by GUI, replaces scanner input with input from the GUI itself
+     * @param g instance of the Game
+     * @param panel panel used by the front end
+     * @throws InterruptedException 
+     */
     @Override
     void move(Game g, GamePanel panel) throws InterruptedException {
         killMoves(g);
@@ -174,10 +195,14 @@ public class HumanPlayer extends Player {
             selected.move(moves, g);
     }
 
+    /**
+     * new rank = original rank + win (100) or loss/tie(10) + 100/turnCount + 100/opponentsRank
+     * @param g instance of the Game
+     * @param win whether the Player won or not
+     */
     @Override
     public void calcPoints(Game g, boolean win) {
         int newRank = getPoints();
-        //original rank + win/loss + turnCount + opponentsRank + ...
         newRank += (100/g.getBoard().getTurn());
         if (getColor().equals("red"))
             newRank += g.getTwo().getPoints()/4;

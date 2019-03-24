@@ -17,9 +17,17 @@ import supercheckers.game.Player;
  */
 public class SuperCheckers {
     
+    /**
+     * holds info on the two players playing a match
+     */
     public static Player p1 = null;
     public static Player p2 = null;
     
+    /**
+     * main application logic
+     * @param args
+     * @throws InterruptedException 
+     */
     public static void main(String[] args) throws InterruptedException {
         Player winner;
         MainMenu menu = new MainMenu();
@@ -52,24 +60,3 @@ public class SuperCheckers {
         }
     }
 }
-/*
-MainMenu menu;
-        GameWindow window;
-        Game game;
-        Player winner;
-        
-        while (true) {
-            menu = new MainMenu();
-            menu.setVisible(true);
-            
-            while (!menu.gameReady()) {
-            }
-            
-            game = menu.getGame();
-            menu.dispose();
-            
-            window = new GameWindow(game);
-            window.play();
-            window.dispose();
-        }
-*/

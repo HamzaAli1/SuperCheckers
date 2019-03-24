@@ -13,15 +13,25 @@ import gui.GamePanel;
  */
 public class Game {
     
+    /**
+     * instance of the board used by the game
+     */
     private final Board board;
     
-    //one is red, two is black; this fact while be made obvious in the GUI
+    /**
+     * one is red, two is black; this fact while be made obvious in the GUI
+     */
     private final Player one;
     private final Player two;
     
-    //how long a match can go before it has to end
+    /**
+     * how long a match can go before it has to end
+     */
     private final int turnLimit;
 
+    /**
+     * default constructor, starts a match between two com players
+     */
     public Game() {
         one = new ComputerPlayer("test1", 50);
         two = new ComputerPlayer("test2", 50);
@@ -33,6 +43,11 @@ public class Game {
         board = new Board();
     }
 
+    /**
+     * main constructor, starts a match between 2 Players
+     * @param one player 1
+     * @param two player 2
+     */
     public Game(Player one, Player two) {
         this.one = one;
         this.two = two;
@@ -44,7 +59,10 @@ public class Game {
         board = new Board();
     }
     
-    //starts game, returns winner
+    /**
+     * starts game, returns winner
+     * @return the Player that won
+     */
     public Player play() {
         System.out.println("Starting Game...\n");
         
@@ -52,7 +70,7 @@ public class Game {
         System.out.println(two.getName() + " is " + two.getColor() + "\n");
         
         double rand = Math.random();
-        if (rand < 0.5) { //TODO: make this random turn order part more efficient (seems redundant)
+        if (rand < 0.5) {
             System.out.println(two.getName() + " Starts!");
             while (canStillPlay()) {
                 System.out.println("\n" + getBoard());
@@ -88,7 +106,12 @@ public class Game {
         }
     }
     
-    //connects with front end gui instead of printing
+    /**
+     * plays a match, outputs to the front end GUI
+     * @param panel panel used by front end
+     * @return the Player that won
+     * @throws InterruptedException 
+     */
     public Player play(GamePanel panel) throws InterruptedException {
         panel.setGameOutput("Starting Game...");
     Thread.sleep(1000);
@@ -135,6 +158,11 @@ public class Game {
         }
     }
     
+    /**
+     * returns whether or not the game should should continue, based on turn count, 
+     * number of pieces both players have, and if both players can make moves.
+     * @return true if game can continue, false otherwise
+     */
     public boolean canStillPlay() {
         if (board.getTurn() < turnLimit) {
             if (board.getReds().size() > 0 && board.getBlacks().size() > 0) {
@@ -145,19 +173,31 @@ public class Game {
         return false;
     }
 
+    /**
+     * @return the board being used by the Game
+     */
     public Board getBoard() {
         return board;
     }
 
+    /**
+     * @return player 1
+     */
     public Player getOne() {
         return one;
     }
 
+    /**
+     * @return player 2
+     */
     public Player getTwo() {
         return two;
     }
     
-    //nonGUI game for debug
+    /**
+     * nonGUI game for debug
+     * @param args
+     */
     public static void main(String[] args) {
         //human match
         //Player one = new HumanPlayer("test1", ""), two = new HumanPlayer("test2", "");

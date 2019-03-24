@@ -30,28 +30,39 @@ import supercheckers.game.Player;
  */
 public final class MainMenu extends javax.swing.JFrame {
 
-    //holds data on all players
+    /**
+     * holds data on all players
+     */
     private TreeSet<Player> players;
     
-    //file to which rankings are saved
+    /**
+     * file to which rankings are saved
+     */
     private final File datFile = new File("./dat/playerrankings.dat");
     
-    //object data is saved to
+    /**
+     * object data is saved to
+     */
     private DataModel dm;
     
-    //temp variable for menu interactions
+    /**
+     * temp variable for menu interactions
+     */
     private HumanPlayer currentUser;
     
-    /*temp variable used to determine purpose for login:
-    0 = new player (only used by loginwindowclosed actionlistener)
-    1 = change username
-    2 = change password
-    3 = pvp
-    4 = vs com
-    5 = pvp player 2 */
+    /** temp variable used to determine purpose for login:
+     * 0 = new player (only used by login_window_closed_action_listener)
+     * 1 = change username
+     * 2 = change password
+     * 3 = pvp
+     * 4 = vs com
+     * 5 = pvp player 2
+     */
     private int loginPurpose = -1;
     
-    //second player for pvp match
+    /**
+     * second player for pvp match
+     */
     private HumanPlayer p2;
     
     /**
@@ -503,7 +514,9 @@ public final class MainMenu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    //take user to leaderboard menu, which displays rankings.
+    /**
+     * take user to leaderboards menu, which displays rankings
+     */
     private void button_leaderboardsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_leaderboardsActionPerformed
         //start by populating table
         String[][] data = new String[players.size()][3];
@@ -531,7 +544,9 @@ public final class MainMenu extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_button_leaderboardsActionPerformed
 
-    //for debugging leaderboards
+    /**
+     * for debugging leaderboards
+     */
     private void fakeData() {
         players.removeAll(players);
         Player temp;
@@ -545,26 +560,30 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }
     
-    //-_-
     private void LeaderboardsWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosed
     }//GEN-LAST:event_LeaderboardsWindowClosed
 
-    //set main window visible after closing leaderboards
+    /**
+     * set main window visible after closing leaderboards
+     */
     private void LeaderboardsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosing
         this.setVisible(true);
         this.toFront();
     }//GEN-LAST:event_LeaderboardsWindowClosing
 
-    //save all ranking data to file
+    /**
+     * save all ranking data to file
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         data2file();
     }//GEN-LAST:event_formWindowClosing
 
-    //-_-
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
     }//GEN-LAST:event_formWindowOpened
 
-    //opens up options menu
+    /**
+     * opens up options menu
+     */
     private void button_optionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_optionsActionPerformed
         //adjust window
         Options.setSize(408, 300);
@@ -574,13 +593,17 @@ public final class MainMenu extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_button_optionsActionPerformed
 
-    //set main window visible after closing options menu
+    /**
+     * set main window visible after closing options menu
+     */
     private void OptionsWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_OptionsWindowClosing
         this.setVisible(true);
         this.toFront();
     }//GEN-LAST:event_OptionsWindowClosing
 
-    //lets user create new player account
+    /**
+     * lets user create new player account
+     */
     private void button_newPlayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_newPlayerActionPerformed
         //opens up signin menu, but disables login button (only sign up available)
         //adjust window
@@ -595,7 +618,9 @@ public final class MainMenu extends javax.swing.JFrame {
         Options.setVisible(false);
     }//GEN-LAST:event_button_newPlayerActionPerformed
 
-    //lets user change their password after logining in
+    /**
+     * lets user change their password after logging in
+     */
     private void button_changePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_changePasswordActionPerformed
         //opens up signin menu, but disables sign up button (only login available)
         if (!textField_options.getText().isEmpty()) {
@@ -613,7 +638,9 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_changePasswordActionPerformed
 
-    //lets user change their username after logining in
+    /**
+     * lets user change their username after logging in
+     */
     private void button_changeNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_changeNameActionPerformed
         //opens up signin menu, but disables sign up button (only login available)
         if (!textField_options.getText().isEmpty()) {
@@ -631,7 +658,9 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_changeNameActionPerformed
 
-    //if loginpage is closed, sets any invisible pages to visible (based on loginpurpose)
+    /**
+     * if login page is closed, sets any invisible pages to visible (based on login_purpose)
+     */
     private void LoginPageWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LoginPageWindowClosing
         if (loginPurpose == 0 || loginPurpose == 1 || loginPurpose == 2) {
             Options.setVisible(true);
@@ -651,7 +680,9 @@ public final class MainMenu extends javax.swing.JFrame {
         p2 = null;
     }//GEN-LAST:event_LoginPageWindowClosing
 
-    //adds new player to game, then either returns to previous menu or starts a new game
+    /**
+     * adds new player to game, then either returns to previous menu or starts a new game
+     */
     private void button_signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_signupActionPerformed
         //adds inputted player to rankings
         String username = textField_username.getText(), password = textField_password.getText();
@@ -705,7 +736,9 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_signupActionPerformed
 
-    //logins as a user, then either returns to previous menu or starts a new game TODO: make sure you can't login in as the same person twice!!!
+    /**
+     * logins as a user, then either returns to previous menu or starts a new game
+     */
     private void button_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_loginActionPerformed
         //sets inputted user as currentUser
         Player temp;
@@ -779,7 +812,9 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button_loginActionPerformed
 
-    //opens up play menu, which lets user start a match
+    /**
+     * opens up play menu, which lets user start a match
+     */
     private void button_playActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_playActionPerformed
         //adjust window
         PlayMenu.setSize(408, 300);
@@ -789,14 +824,18 @@ public final class MainMenu extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_button_playActionPerformed
 
-    //set main window visible after closing play menu
+    /**
+     * set main window visible after closing play menu
+     */
     private void PlayMenuWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_PlayMenuWindowClosing
         //set main window visible
         this.setVisible(true);
         this.toFront();
     }//GEN-LAST:event_PlayMenuWindowClosing
 
-    //starts a match against a computer player
+    /**
+     * starts a match against a computer player
+     */
     private void button_comActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_comActionPerformed
             //adjust window
             LoginPage.setSize(408, 300);
@@ -808,6 +847,9 @@ public final class MainMenu extends javax.swing.JFrame {
             loginPurpose = 4;
     }//GEN-LAST:event_button_comActionPerformed
 
+    /**
+     * starts a match against another player
+     */
     private void button_pvpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_pvpActionPerformed
         //adjust window
         LoginPage.setSize(408, 300);
@@ -819,7 +861,12 @@ public final class MainMenu extends javax.swing.JFrame {
         loginPurpose = 3;
     }//GEN-LAST:event_button_pvpActionPerformed
 
-    //confirms that an inputted username and password is correct
+    /**
+     * confirms that an inputted username and password is correct
+     * @param user username
+     * @param pass password
+     * @return the player if the credentials are valid, else returns null
+     */
     private Player validUser(String user, String pass) {
         HumanPlayer temp;
         for (Player p : players) {
@@ -832,7 +879,11 @@ public final class MainMenu extends javax.swing.JFrame {
         return null;
     }
 
-    //checks if a username has already been taken
+    /**
+     * checks if a username has already been taken
+     * @param n
+     * @return 
+     */
     private boolean usernameTaken(String n) {
         for (Player p : players) {
             if (p.getName().equals(n))
@@ -841,7 +892,9 @@ public final class MainMenu extends javax.swing.JFrame {
         return false;
     }
     
-    //saves all ranking data to file
+    /**
+     * saves all ranking data to file
+     */
     private void data2file() {
         //save all data before closing
         dm = new DataModel(players);
@@ -856,7 +909,9 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }
     
-    //pulls ranking data from file
+    /**
+     * pulls ranking data from file
+     */
     private void file2data() {
         //load data from dat file
         try {
@@ -874,13 +929,22 @@ public final class MainMenu extends javax.swing.JFrame {
         }
     }
     
-    //vs computer
+    /**
+     * starts a match vs a com
+     * @param p player who is playing the match
+     * @throws InterruptedException 
+     */
     private void play(HumanPlayer p) throws InterruptedException {
         SuperCheckers.p1 = p;
         SuperCheckers.p2 = new ComputerPlayer("CheckersBot Mk." + (int)(Math.random()*1000), 1000);
     }
     
-    //pvp
+    /**
+     * starts a match between two players
+     * @param one player 1
+     * @param two player 2
+     * @throws InterruptedException 
+     */
     private void play(HumanPlayer one, HumanPlayer two) throws InterruptedException {
         SuperCheckers.p1 = one;
         SuperCheckers.p2 = two;

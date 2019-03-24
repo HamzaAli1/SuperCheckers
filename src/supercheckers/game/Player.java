@@ -15,53 +15,109 @@ import java.util.Objects;
  * @author Hamza Ali
  */
 public abstract class Player implements Comparable, Serializable {
+    
+    /**
+     * holds number of points player has earned
+     */
     private int points;
+    
+    /**
+     * player name
+     */
     private String name;
+    
+    /**
+     * player color, set during Game
+     */
     private String color;
+    
+    /**
+     * holds all possible kill moves a player has; used during the Game
+     */
     protected final ArrayList<Piece> kills = new ArrayList<>();
     
+    /**
+     * main constructor, creates a new Player
+     * @param n 
+     */
     public Player(String n) {
         name = n;
     }
 
+    /** 
+     * @return the player's name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * sets the player's name
+     * @param name new name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /** 
+     * @return the player's color
+     */
     public String getColor() {
         return color;
     }
 
+    /**
+     * sets the player's color
+     * @param color new color
+     */
     public void setColor(String color) {
         this.color = color;
     }
 
+    /** 
+     * @return the player's points
+     */
     public int getPoints() {
         return points;
     }
 
+    /**
+     * sets the player's points
+     * @param points new point value
+     */
     protected void setPoints(int points) {
         this.points = points;
     }
     
-    //makes a move for a player
+    /**
+     * makes a move for a player
+     * @param g instance of the Game
+     */
     abstract void move(Game g);
     
-    //connects with front end instead of printing
+    /**
+     * connects with front end instead of printing
+     * @param g instance of the Game
+     * @param panel panel used by front end
+     * @throws InterruptedException 
+     */
     abstract void move(Game g, GamePanel panel) throws InterruptedException;
     
-    //adjusts players points after a match
+    /**
+     * adjusts players points after a match
+     * @param g instance of the Game
+     * @param win 
+     */
     public abstract void calcPoints(Game g, boolean win);
 
-    /*
-    Makes sure there is a piece at the selected position on the board. 
-    This is done by going through the arraylist of pieces cosresponding to the player's <color>,
-    and checking if there is a piece in the arraylist with a matching r & c value. 
-    This method also enforces the rule where any kill moves available to the player must be taken.
+    /**
+     * Makes sure there is a piece at the selected position on the board. 
+     * This is done by going through the ArrayList of pieces corresponding to the player's color,
+     * and checking if there is a piece in the ArrayList with a matching r & c value. 
+     * This method also enforces the rule where any kill moves available to the player must be taken.
+     * @param g instance of the Game
+     * @param in String containing row & column of piece; "r,c"
+     * @return the piece if there is a valid piece at the coordinates, else null
      */
     protected Piece validPiece(Game g, String in) {
         if (!kills.isEmpty()) {
@@ -90,6 +146,14 @@ public abstract class Player implements Comparable, Serializable {
         return null;
     }
     
+    /**
+     * Same method as above, except it interacts with the GUI
+     * @param g instance of the Game
+     * @param in String containing row & column of piece; "r,c"
+     * @param panel the panel used by the front end
+     * @return the piece if there is a valid piece at the coordinates, else null
+     * @throws InterruptedException 
+     */
     protected Piece validPiece(Game g, String in, GamePanel panel) throws InterruptedException {
         if (!kills.isEmpty()) {
             for (Piece p : kills) {
@@ -117,11 +181,12 @@ public abstract class Player implements Comparable, Serializable {
         return null;
     }
     
-    /*
-    Method finds all pieces with possible kill moves. One of these pieces must 
-    be moved during a players turn. Finds pieces by running validMove() on all
-    pieces player controls, and checking if those piece have a valid kill move (diagonal hop).
-    */
+    /**
+     * Method finds all pieces with possible kill moves. One of these pieces must 
+     * be moved during a players turn. Finds pieces by running validMove() on all
+     * pieces player controls, and checking if those piece have a valid kill move (diagonal hop).
+     * @param g instance of the game
+     */
     protected void killMoves(Game g) {
         ArrayList<Piece> pieces = new ArrayList<>();
         String moveR, moveL, moveR2, moveL2;
@@ -164,14 +229,18 @@ public abstract class Player implements Comparable, Serializable {
         kills.addAll(pieces);
     }
     
-    //reset arraylist every turn
+    /**
+     * clears killMoves
+     */
     public void clearKillMoves() {kills.removeAll(kills);}
     
-    /*
-    Checks to see if current player can make a move. Calls piece can move on all
-    pieces the player controls and sums up the number of times the call returns true.
-    If sum = 0 then the payer has no moves available.
-    */
+    /**
+     * Checks to see if current player can make a move. Calls piece can move on all
+     * pieces the player controls and sums up the number of times the call returns true.
+     * If sum = 0 then the payer has no moves available.
+     * @param g instance of the Game
+     * @return true if the player has any available moves
+     */
     public boolean canMove(Game g) {
         int moves = 0;
         if (getColor().equals("red")) {
@@ -186,12 +255,16 @@ public abstract class Player implements Comparable, Serializable {
         return moves > 0;
     }
     
-    /*
-    Checks if Piece <p> can can make a move. This is done by creating all possible 
-    moves for that piece and then calling validMove() to confirm if the move is valid.
-    Returns false if no moves are available for piece. This is mainy used to 
-    check if a player can make any moves.
-    */
+    /**
+     * Checks if Piece p can can make a move. This is done by creating all possible 
+     * moves for that piece and then calling validMove() to confirm if the move is valid.
+     * Returns false if no moves are available for piece. This is mainly used to 
+     * check if a player can make any moves.
+     * @param g instance of the Game
+     * @param p piece being checked
+     * @param color piece color...
+     * @return true if the piece has any available moves
+     */
     protected boolean pieceCanMove(Game g, Piece p, String color) {
         if (kills.contains(p)) {
             return true;
@@ -240,10 +313,14 @@ public abstract class Player implements Comparable, Serializable {
         return false;
     }
         
-    /*
-    Makes sure that an inputted move is valid. This is done by checking if inputted 
-    move matchs one of the 4 possible moves any chess piece can make (8 for double).
-    Returns false if move is not valid for any reason.
+    /**
+     * Makes sure that an inputted move is valid. This is done by checking if inputted 
+     * move matches one of the 4 possible moves any chess piece can make (8 for double).
+     * Returns false if move is not valid for any reason.
+     * @param g instance of the Game
+     * @param moves moves being made
+     * @param piece piece being moved
+     * @return true if move is valid
      */
     protected boolean validMove(Game g, String[] moves, Piece piece) {
         int r, c, prevR = piece.getRow(), prevC = piece.getColumn();
@@ -364,6 +441,11 @@ public abstract class Player implements Comparable, Serializable {
         return compareTo(obj) == 0;
     }
     
+    /**
+     * compares Players; Players cannot have the same name, so only factor is ranking points
+     * @param o player being compared to this player
+     * @return 1 is greater, 0 if equal, -1 if less
+     */
     @Override
     //Compare by player ranks.
     public int compareTo(Object o) {

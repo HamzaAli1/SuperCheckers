@@ -12,9 +12,19 @@ import java.util.ArrayList;
  * @author Hamza Ali
  */
 public class Board {
+    /**
+     * tracks how many turns have gone by
+     */
     private int turn;
+    
+    /**
+     * holds all pieces being used
+     */
     private final ArrayList<Piece> reds, blacks;
     
+    /**
+     * creates a new board and populates it with pieces
+     */
     public Board() {
         turn = 1;
         
@@ -24,22 +34,38 @@ public class Board {
         populateBoard();
     }
 
+    /**
+     * increases turn by one
+     */
     public void turnUp() {
         turn++;
     }
     
+    /**
+     * @return the turn number
+     */
     public int getTurn() {
         return turn;
     }
 
+    /**
+     * @return returns an ArrayList containing all red pieces on the board
+     */
     public ArrayList<Piece> getReds() {
         return reds;
     }
 
+    /**
+     * @return returns an ArrayList containing all black pieces on the board
+     */
     public ArrayList<Piece> getBlacks() {
         return blacks;
     }
     
+    /**
+     * populates the board with new pieces; really just adds new pieces to 
+     * respective ArrayLists with proper r,c values.
+     */
     private void populateBoard() {
         Piece temp1, temp2;
         for (int r = 0; r < 3; r+=2) {
@@ -58,6 +84,13 @@ public class Board {
         }
     }
 
+    /**
+     * returns true if there is a piece of a certain color at a point
+     * @param r row of piece
+     * @param c column of piece
+     * @param color color of piece
+     * @return the piece if it exists
+     */
     public Piece pieceAtPoint(int r, int c, String color) {
         if (color.equals("red")) {
             for (Piece red : reds) {
@@ -73,11 +106,22 @@ public class Board {
         return null;
     }
     
-    //returns true if a space on the board is empty
+    /**
+     * returns true if a space on the board is empty
+     * @param r row of piece
+     * @param c column of piece
+     * @return true if there is no piece at the point
+     */
     public boolean noPieceAtPoint(int r, int c) {
         return pieceAtPoint(r, c, "red") == null && pieceAtPoint(r, c, "black") == null;
     }
     
+    /**
+     * removes a piece from the board
+     * @param r row of piece
+     * @param c column of piece
+     * @param color color of piece
+     */
     public void removePiece(int r, int c, String color) {
         if (color.equals("red"))
             reds.remove(pieceAtPoint(r, c, color));
@@ -85,6 +129,9 @@ public class Board {
             blacks.remove(pieceAtPoint(r, c, color));
     }
     
+    /**
+     * @return a visual representation of the board
+     */
     @Override
     public String toString() {
         String output = "---------------------------------\n| ";
