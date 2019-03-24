@@ -113,7 +113,7 @@ public class HumanPlayer extends Player {
                 while (!panel.confirmed()) {
                     if (panel.getPaintPurpose() != 1) {
                         panel.setGameOutput(getName() + ", select a piece...");
-                        Thread.sleep(1000);
+                        Thread.sleep(50);
                         panel.setPaintPurpose(1);
                     }
                     Thread.sleep(50);
@@ -129,7 +129,7 @@ public class HumanPlayer extends Player {
                     panel.setGameOutput("Please select a valid piece...");
                 }
                 if (loop) panel.resetSelected();
-                Thread.sleep(1000);
+                Thread.sleep(50);
                 panel.reset();
             }
             //select new position (Note: the inputted moves MUST be in order. This will be accounted for in GUI)
@@ -138,7 +138,7 @@ public class HumanPlayer extends Player {
                 while (!panel.confirmed()) {
                     if (panel.getPaintPurpose() != 3) {
                         panel.setGameOutput(getName() + ", select where to move your piece...");
-                        Thread.sleep(1000);
+                        Thread.sleep(50);
                         panel.setPaintPurpose(3);
                     }
                     Thread.sleep(50);
@@ -152,7 +152,7 @@ public class HumanPlayer extends Player {
                     panel.setGameOutput("Selected move not valid, please try again.");
                     panel.resetMove();
                 }
-                Thread.sleep(1000);
+                Thread.sleep(50);
                 panel.reset();
             }
             //confirm move (y/n)

@@ -165,7 +165,7 @@ public abstract class Player implements Comparable, Serializable {
     }
     
     //reset arraylist every turn
-    protected void clearKillMoves() {kills.removeAll(kills);}
+    public void clearKillMoves() {kills.removeAll(kills);}
     
     /*
     Checks to see if current player can make a move. Calls piece can move on all

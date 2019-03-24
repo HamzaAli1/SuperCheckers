@@ -23,8 +23,8 @@ public class Game {
     private final int turnLimit;
 
     public Game() {
-        one = new ComputerPlayer("test1");
-        two = new ComputerPlayer("test2");
+        one = new ComputerPlayer("test1", 50);
+        two = new ComputerPlayer("test2", 50);
         one.setColor("red");
         two.setColor("black");
         
@@ -91,14 +91,14 @@ public class Game {
     //connects with front end gui instead of printing
     public Player play(GamePanel panel) throws InterruptedException {
         panel.setGameOutput("Starting Game...");
-        Thread.sleep(2000);
+    Thread.sleep(1000);
         
         panel.setGameOutput(one.getName() + " is " + one.getColor() + ", and " + two.getName() + " is " + two.getColor());
         Thread.sleep(3500);
         
         double rand = Math.random();
         if (rand < 0.5) {
-            panel.setGameOutput(one.getName() + " starts!");
+            panel.setGameOutput(two.getName() + " starts!");
             Thread.sleep(2000);
             while (canStillPlay()) {
                 panel.repaint();
@@ -109,7 +109,7 @@ public class Game {
                 board.turnUp();
             }
         } else {
-            panel.setGameOutput(two.getName() + " starts!");
+            panel.setGameOutput(one.getName() + " starts!");
             Thread.sleep(2000);
             while (canStillPlay()) {
                 panel.repaint();

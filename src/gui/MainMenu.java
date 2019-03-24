@@ -62,7 +62,6 @@ public final class MainMenu extends javax.swing.JFrame {
         
         file2data();
         //fakeData(); //debug only
-        //sort
         
         initComponents();
         
@@ -663,6 +662,7 @@ public final class MainMenu extends javax.swing.JFrame {
                 players.add(temp);
                      
                 if (loginPurpose == 0) {
+                    LoginPage.setVisible(false);
                     Options.setVisible(true);
                     Options.toFront();
                 } else if (loginPurpose == 3) {
@@ -747,12 +747,14 @@ public final class MainMenu extends javax.swing.JFrame {
                     }
                     currentUser  = null;
                 } else if (loginPurpose == 5) {
-                    p2 = (HumanPlayer) temp;
-                    
-                    label_p2.setVisible(false);
-                    LoginPage.setVisible(false);
-                    PlayMenu.setVisible(false);
-                    
+                    if (!temp.equals(currentUser)) {
+                        p2 = (HumanPlayer) temp;
+
+                        label_p2.setVisible(false);
+                        LoginPage.setVisible(false);
+                        PlayMenu.setVisible(false);
+                    } else
+                        JOptionPane.showMessageDialog(LoginPage, "Please use a different user for player two...", "Error", JOptionPane.ERROR_MESSAGE);
                     try {
                         play(currentUser, p2);
                     } catch (InterruptedException ex) {
@@ -874,8 +876,8 @@ public final class MainMenu extends javax.swing.JFrame {
     
     //vs computer
     private void play(HumanPlayer p) throws InterruptedException {
-        SuperCheckers.p1 = new ComputerPlayer("test1");
-        SuperCheckers.p2 = new ComputerPlayer("test2"); //TODO
+        SuperCheckers.p1 = p;
+        SuperCheckers.p2 = new ComputerPlayer("CheckersBot Mk." + (int)(Math.random()*1000), 1000);
     }
     
     //pvp

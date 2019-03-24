@@ -15,10 +15,12 @@ import java.util.ArrayList;
 public final class ComputerPlayer extends Player {
     
     private final int rank = 10;
+    private final int delay;
     
-    public ComputerPlayer(String n) {
+    public ComputerPlayer(String n, int d) {
         super(n + "_COM");
         calcPoints(null, false);
+        delay = d;
     }
     
     @Override
@@ -95,6 +97,9 @@ public final class ComputerPlayer extends Player {
 
     @Override
     void move(Game g, GamePanel panel) throws InterruptedException {
+        panel.resetSelected();
+        panel.resetMove();
+        panel.reset();
         panel.setGameOutput("Computer is making its move...");
         
         Piece p;
@@ -136,7 +141,6 @@ public final class ComputerPlayer extends Player {
         
         clearKillMoves();
         
-        panel.setGameOutput("Computer has made a move.");
-        Thread.sleep(100);
+        Thread.sleep(delay);
     }
 }

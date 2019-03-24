@@ -17,6 +17,8 @@ public class DataModel implements Serializable {
     private TreeSet<Player> players;
 
     public DataModel(TreeSet<Player> players) {
+        for (Player p : players)
+            p.clearKillMoves();
         this.players = players;
     }
 
@@ -25,6 +27,8 @@ public class DataModel implements Serializable {
     }
 
     public void setPlayers(TreeSet<Player> players) {
+        for (Player p : players)
+            p.clearKillMoves();
         this.players = players;
     }
 }
