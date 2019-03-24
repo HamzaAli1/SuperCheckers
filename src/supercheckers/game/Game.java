@@ -53,7 +53,7 @@ public class Game {
         
         double rand = Math.random();
         if (rand < 0.5) { //TODO: make this random turn order part more efficient (seems redundant)
-            System.out.println(one.getName() + " Starts!");
+            System.out.println(two.getName() + " Starts!");
             while (canStillPlay()) {
                 System.out.println("\n" + getBoard());
                 if (board.getTurn() % 2 == 0)
@@ -63,7 +63,7 @@ public class Game {
                 board.turnUp();
             }
         } else {
-            System.out.println(two.getName() + " Starts!");
+            System.out.println(one.getName() + " Starts!");
             while (canStillPlay()) {
                 System.out.println("\n" + getBoard());
                 if (board.getTurn() % 2 == 0)

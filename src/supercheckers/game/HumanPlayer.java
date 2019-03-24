@@ -15,7 +15,6 @@ import java.util.Scanner;
  */
 public class HumanPlayer extends Player {
 
-    private Scanner chop;
     private String password;
 
     public HumanPlayer(String n, String p) {
@@ -40,7 +39,7 @@ public class HumanPlayer extends Player {
     @Override
     void move(Game g) {
         killMoves(g);
-        chop = new Scanner(System.in);
+        Scanner chop = new Scanner(System.in);
         boolean loop = true, confirmed = false;
         String input = "";
         Piece selected = null;

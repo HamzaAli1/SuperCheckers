@@ -20,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import misc.DataModel;
 import misc.SuperCheckers;
 import supercheckers.game.ComputerPlayer;
+import supercheckers.game.Game;
 import supercheckers.game.HumanPlayer;
 import supercheckers.game.Player;
 
@@ -61,6 +62,7 @@ public final class MainMenu extends javax.swing.JFrame {
         
         file2data();
         //fakeData(); //debug only
+        //sort
         
         initComponents();
         
@@ -532,10 +534,14 @@ public final class MainMenu extends javax.swing.JFrame {
 
     //for debugging leaderboards
     private void fakeData() {
-        players.clear();
+        players.removeAll(players);
         Player temp;
         for (int i = 0; i < 10; i++) {
             temp = new HumanPlayer("test" + i, "boop");
+            if (i % 2 == 0)
+                temp.calcPoints(new Game(temp, new HumanPlayer("yee", "boop")), true);
+            else
+                temp.calcPoints(new Game(temp, new HumanPlayer("yee", "boop")), false);
             players.add(temp);
         }
     }
@@ -876,11 +882,6 @@ public final class MainMenu extends javax.swing.JFrame {
     private void play(HumanPlayer one, HumanPlayer two) throws InterruptedException {
         SuperCheckers.p1 = one;
         SuperCheckers.p2 = two;
-    }
-    
-    public void updateRankings(Player one, Player two) {
-        players.add(one);
-        players.add(two);
     }
     
     /**

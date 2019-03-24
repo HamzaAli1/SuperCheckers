@@ -13,10 +13,10 @@ import java.util.ArrayList;
  */
 public class Board {
     private int turn;
-    private ArrayList<Piece> reds, blacks;
+    private final ArrayList<Piece> reds, blacks;
     
     public Board() {
-        turn = 0;
+        turn = 1;
         
         reds = new ArrayList();
         blacks = new ArrayList();

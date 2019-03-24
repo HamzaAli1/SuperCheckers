@@ -368,9 +368,9 @@ public abstract class Player implements Comparable, Serializable {
     //Compare by player ranks.
     public int compareTo(Object o) {
         Player other = (Player) o;
-        if (!getName().equals(other.getName())) {
-            if (getPoints() > other.getPoints()) return 1;
-            else if (getPoints() < other.getPoints()) return -1;
+        if (!name.equals(other.getName())) {
+            if (points < other.getPoints()) return 1;
+            else if (points > other.getPoints()) return -1;
             else {
                 if (hashCode() > other.hashCode()) return 1;
                 return -1;
