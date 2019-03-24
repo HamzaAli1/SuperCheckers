@@ -8,8 +8,6 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,12 +15,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.TreeSet;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import misc.DataModel;
+import misc.SuperCheckers;
 import supercheckers.game.ComputerPlayer;
-import supercheckers.game.Game;
 import supercheckers.game.HumanPlayer;
 import supercheckers.game.Player;
 
@@ -55,7 +52,7 @@ public final class MainMenu extends javax.swing.JFrame {
     
     //second player for pvp match
     private HumanPlayer p2;
-        
+    
     /**
      * Creates new form MainMenu
      */
@@ -508,7 +505,7 @@ public final class MainMenu extends javax.swing.JFrame {
     //take user to leaderboard menu, which displays rankings.
     private void button_leaderboardsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_leaderboardsActionPerformed
         //start by populating table
-        String[][] data = new String[players.size() + 1][3];
+        String[][] data = new String[players.size()][3];
         String[] headers = {"Rank", "Player Name", "Points"};
         String name;
         int rank = 0, points;
@@ -658,8 +655,11 @@ public final class MainMenu extends javax.swing.JFrame {
             if (!usernameTaken(username)) {
                 temp = new HumanPlayer(username, password);
                 players.add(temp);
-                                
-                if (loginPurpose == 3) {
+                     
+                if (loginPurpose == 0) {
+                    Options.setVisible(true);
+                    Options.toFront();
+                } else if (loginPurpose == 3) {
                     currentUser = temp;
                     loginPurpose = 5;
                     label_p2.setVisible(true);
@@ -868,130 +868,19 @@ public final class MainMenu extends javax.swing.JFrame {
     
     //vs computer
     private void play(HumanPlayer p) throws InterruptedException {
-        //set up game
-        ComputerPlayer com = new ComputerPlayer("test");
-        //Game game = new Game(p, com);
-        
-        Game game = new Game();
-        
-        //set up window
-        JFrame window = new JFrame();
-        GamePanel panel = new GamePanel(game);
-        window.add(panel);
-        
-        Dimension dms = new Dimension(800, 940); //board is only 800, 840
-        window.setSize(dms);
-        window.setMinimumSize(dms);
-        window.setResizable(false);
-        window.setVisible(true);
-        window.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                window.dispose();
-                toFront();
-                setVisible(true);
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-            }
-        });
-                        
-        //start game       
-        panel.play();
-        
-        window.dispose();
-        toFront();
-        setVisible(true);
+        SuperCheckers.p1 = new ComputerPlayer("test1");
+        SuperCheckers.p2 = new ComputerPlayer("test2"); //TODO
     }
     
-    //pvp TODO whyyyyyyyyyyyyy
+    //pvp
     private void play(HumanPlayer one, HumanPlayer two) throws InterruptedException {
-        //set up game
-        Game game = new Game(one, two);
-        
-        //set up window
-        JFrame window = new JFrame();
-        GamePanel panel = new GamePanel(game);
-        window.add(panel);
-        
-        Dimension dms = new Dimension(800, 940); //board is only 800, 840
-        window.setSize(dms);
-        window.setMinimumSize(dms);
-        window.setResizable(false);
-        window.setVisible(true);
-        window.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                window.dispose();
-                toFront();
-                setVisible(true);
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-            }
-        });
-                        
-        //start game       
-        Player temp = panel.play();
-        
-        //calc points
-        if (temp.equals(one)) {
-            one.calcPoints(game, true);
-            two.calcPoints(game, false);
-        } else if (temp.equals(two)) {
-            one.calcPoints(game, false);
-            two.calcPoints(game, true);
-        } else {
-            one.calcPoints(game, false);
-            two.calcPoints(game, false);
-        }
-        
-        //close window
-        window.dispose();
-        toFront();
-        setVisible(true);
+        SuperCheckers.p1 = one;
+        SuperCheckers.p2 = two;
+    }
+    
+    public void updateRankings(Player one, Player two) {
+        players.add(one);
+        players.add(two);
     }
     
     /**

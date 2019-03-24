@@ -184,6 +184,7 @@ public class HumanPlayer extends Player {
             newRank += g.getTwo().getPoints()/4;
         else
             newRank += g.getOne().getPoints()/4;
+        
         if (win)
             newRank += 100;
         else

@@ -89,7 +89,7 @@ public final class ComputerPlayer extends Player {
     */
 
     @Override
-    void calcPoints(Game g, boolean win) {
+    public void calcPoints(Game g, boolean win) {
         setPoints(rank);
     }
 

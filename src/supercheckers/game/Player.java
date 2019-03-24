@@ -55,7 +55,7 @@ public abstract class Player implements Comparable, Serializable {
     abstract void move(Game g, GamePanel panel) throws InterruptedException;
     
     //adjusts players points after a match
-    abstract void calcPoints(Game g, boolean win);
+    public abstract void calcPoints(Game g, boolean win);
 
     /*
     Makes sure there is a piece at the selected position on the board. 
