@@ -523,7 +523,7 @@ public final class MainMenu extends javax.swing.JFrame {
         String[] headers = {"Rank", "Player Name", "Points"};
         String name;
         int rank = 0, points;
-        for (Player p : players) {
+        for (Player p : players.descendingSet()) {
             name = p.getName();
             points = p.getPoints();
             

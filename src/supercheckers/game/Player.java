@@ -9,6 +9,7 @@ import gui.GamePanel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.TreeSet;
 
 /**
  *
@@ -451,13 +452,34 @@ public abstract class Player implements Comparable, Serializable {
     public int compareTo(Object o) {
         Player other = (Player) o;
         if (!name.equals(other.getName())) {
-            if (points < other.getPoints()) return 1;
-            else if (points > other.getPoints()) return -1;
-            else {
-                if (hashCode() > other.hashCode()) return 1;
-                return -1;
-            }
+            if (points != other.getPoints()) return (points - other.getPoints());
+            else
+                return hashCode() - other.hashCode();
         }
         return 0;
+    }
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
+    
+    /**
+     * debug compareTo
+     * @param args 
+     */
+    public static void main(String[] args) {
+        TreeSet<Player> players = new TreeSet<>();
+        HumanPlayer hamza = new HumanPlayer("hamza", "boop"), bob = new HumanPlayer("bob", "boop"), test = new HumanPlayer("test", "boop");
+        
+        hamza.setPoints(100);
+        bob.setPoints(38);
+        test.setPoints(0);
+        
+        players.add(bob);
+        players.add(test);
+        players.add(hamza);
+        
+        System.out.println(players.toString() + "\n" + players.descendingSet().toString());
     }
 }
