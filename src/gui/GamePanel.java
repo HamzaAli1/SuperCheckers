@@ -79,6 +79,12 @@ public class GamePanel extends JPanel {
     private boolean finalButtonPressed = false;
     
     /**
+     * enables/disables mouse listeners based on value
+     * true = enabled, false = disabled
+     */
+    boolean touchEnabled = false;
+    
+    /**
      * holds image for a double piece
      */
     private final BufferedImage img_double = loadCrown();
@@ -114,25 +120,27 @@ public class GamePanel extends JPanel {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int x = e.getX(), y = e.getY();
-                if (buttonActive && (x > 647 && x < 763 && y > 824 && y < 880)) {
-                    if ((paintPurpose == 1 || paintPurpose == 3))
-                        buttonPressed = true;
-                    else if (paintPurpose == 4) {
-                        if(x > 645 && x < 700 && y > 824 && y < 880)
+                if (touchEnabled) {
+                    int x = e.getX(), y = e.getY();
+                    if (buttonActive && (x > 647 && x < 763 && y > 824 && y < 880)) {
+                        if ((paintPurpose == 1 || paintPurpose == 3))
                             buttonPressed = true;
-                        else {
-                            resetSelected();
-                            resetMove();
+                        else if (paintPurpose == 4) {
+                            if(x > 645 && x < 700 && y > 824 && y < 880)
+                                buttonPressed = true;
+                            else {
+                                resetSelected();
+                                resetMove();
+                            }
+                            finalButtonPressed = true;
                         }
-                        finalButtonPressed = true;
                     }
-                }
-                else if (paintPurpose == 1 || paintPurpose == 3) {
-                    highlightSquare(x, y);
-                    buttonActive = true;
-                    if (paintPurpose == 1)
-                        piece = getSelectedPiece();
+                    else if (paintPurpose == 1 || paintPurpose == 3) {
+                        highlightSquare(x, y);
+                        buttonActive = true;
+                        if (paintPurpose == 1)
+                            piece = getSelectedPiece();
+                    }
                 }
             }
 
@@ -219,6 +227,8 @@ public class GamePanel extends JPanel {
      * @return whether or not the painted button has been pressed
      */
     public boolean confirmed() {
+        if (paintPurpose == 1)
+            return !piece.isEmpty();
         return buttonPressed;
     }
     
@@ -241,6 +251,20 @@ public class GamePanel extends JPanel {
      */
     public void resetMove() {
         move = "";
+    }
+    
+    /**
+     * enables mouse listeners 
+     */
+    public void enableTouch() {
+        touchEnabled = true;
+    }
+    
+    /**
+     * disables mouse listeners
+     */
+    public void disableTouch() {
+        touchEnabled = false;
     }
     
     /**
@@ -268,8 +292,8 @@ public class GamePanel extends JPanel {
             if (mouseX != -1 && mouseY != -1) {
                 g.setColor(Color.CYAN);
                 g.fillRect(mouseX, mouseY, 100, 100);
-                paintText(g, "Selected Piece: " + mouseX/100 + "," + mouseY/100);
-                paintButton(g);
+                //paintText(g, "Selected Piece: " + mouseX/100 + "," + mouseY/100);
+                //paintButton(g);
             }
         } else if (paintPurpose == 2) {
             paintText(g, gameOutput);
@@ -280,7 +304,7 @@ public class GamePanel extends JPanel {
                     int x = Integer.parseInt(m.substring(0, 1))*100, y = Integer.parseInt(m.substring(2))*100;
                     g.fillRect(x, y, 100, 100);
                 }
-                paintText(g, "Selected Space(s): " + move);
+                //paintText(g, "Selected Space(s): " + move);
                 paintButton(g);
             }
         } else if (paintPurpose == 4) {
@@ -437,10 +461,10 @@ public class GamePanel extends JPanel {
     public static void main(String[] args) throws InterruptedException {
         //human match
         Player one = new HumanPlayer("test1", ""), two = new HumanPlayer("test2", "");
-        //Game game = new Game(one, two);
+        Game game = new Game(one, two);
         
         //com match
-        Game game = new Game();
+        //Game game = new Game();
         
         JFrame window = new JFrame();
         GamePanel test = new GamePanel(game);

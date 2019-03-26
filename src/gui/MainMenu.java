@@ -540,7 +540,7 @@ public final class MainMenu extends javax.swing.JFrame {
         Leaderboards.setSize(408, 300);
         Leaderboards.setMinimumSize(new Dimension(408,300));
         Leaderboards.setVisible(true);
-        Leaderboards.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        Leaderboards.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         this.setVisible(false);
     }//GEN-LAST:event_button_leaderboardsActionPerformed
 
@@ -588,7 +588,7 @@ public final class MainMenu extends javax.swing.JFrame {
         //adjust window
         Options.setSize(408, 300);
         Options.setVisible(true);
-        Options.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        Options.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         Options.setResizable(false);
         this.setVisible(false);
     }//GEN-LAST:event_button_optionsActionPerformed
@@ -609,7 +609,7 @@ public final class MainMenu extends javax.swing.JFrame {
         //adjust window
         LoginPage.setSize(408, 300);
         LoginPage.setVisible(true);
-        LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        LoginPage.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         LoginPage.setResizable(false);
         
         loginPurpose = 0;
@@ -627,7 +627,7 @@ public final class MainMenu extends javax.swing.JFrame {
             //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
-            LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
             LoginPage.setResizable(false);
 
             button_signup.setEnabled(false);
@@ -647,7 +647,7 @@ public final class MainMenu extends javax.swing.JFrame {
             //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
-            LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
             LoginPage.setResizable(false);
 
             button_signup.setEnabled(false);
@@ -819,7 +819,7 @@ public final class MainMenu extends javax.swing.JFrame {
         //adjust window
         PlayMenu.setSize(408, 300);
         PlayMenu.setVisible(true);
-        PlayMenu.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/3, Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        PlayMenu.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         PlayMenu.setResizable(false);
         this.setVisible(false);
     }//GEN-LAST:event_button_playActionPerformed
@@ -840,7 +840,7 @@ public final class MainMenu extends javax.swing.JFrame {
             //adjust window
             LoginPage.setSize(408, 300);
             LoginPage.setVisible(true);
-            LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+            LoginPage.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
             LoginPage.setResizable(false);
 
             PlayMenu.setVisible(false);
@@ -854,7 +854,7 @@ public final class MainMenu extends javax.swing.JFrame {
         //adjust window
         LoginPage.setSize(408, 300);
         LoginPage.setVisible(true);
-        LoginPage.setLocation(100+Toolkit.getDefaultToolkit().getScreenSize().width/3, 100+Toolkit.getDefaultToolkit().getScreenSize().height/3);
+        LoginPage.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width/3)-100, (Toolkit.getDefaultToolkit().getScreenSize().height/3)-100);
         LoginPage.setResizable(false);
 
         PlayMenu.setVisible(false);
