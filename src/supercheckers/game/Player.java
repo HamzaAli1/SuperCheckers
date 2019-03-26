@@ -470,14 +470,16 @@ public abstract class Player implements Comparable, Serializable {
      */
     public static void main(String[] args) {
         TreeSet<Player> players = new TreeSet<>();
-        HumanPlayer hamza = new HumanPlayer("hamza", "boop"), bob = new HumanPlayer("bob", "boop"), test = new HumanPlayer("test", "boop");
+        HumanPlayer hamza = new HumanPlayer("hamza", "boop"), baba = new HumanPlayer("baba", "boop"), bob = new HumanPlayer("bob", "boop"), test = new HumanPlayer("test", "boop");
         
         hamza.setPoints(100);
         bob.setPoints(38);
+        baba.setPoints(42);
         test.setPoints(0);
         
         players.add(bob);
         players.add(test);
+        players.add(baba);
         players.add(hamza);
         
         System.out.println(players.toString() + "\n" + players.descendingSet().toString());

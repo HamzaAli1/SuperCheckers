@@ -57,6 +57,7 @@ public class SuperCheckers {
             p1 = null;
             p2 = null;
             menu.setVisible(true);
+            menu.updateLeaderboards();
         }
     }
 }

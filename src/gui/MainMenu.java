@@ -73,6 +73,7 @@ public final class MainMenu extends javax.swing.JFrame {
         
         file2data();
         //fakeData(); //debug only
+        updateLeaderboards();
         
         initComponents();
         
@@ -558,6 +559,16 @@ public final class MainMenu extends javax.swing.JFrame {
                 temp.calcPoints(new Game(temp, new HumanPlayer("yee", "boop")), false);
             players.add(temp);
         }
+    }
+    
+    public void updateLeaderboards() {
+        TreeSet<Player> temp = new TreeSet<>();
+        
+        for (Player p : players)
+            temp.add(p);
+        
+        players.removeAll(players);
+        players.addAll(temp);
     }
     
     private void LeaderboardsWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_LeaderboardsWindowClosed
