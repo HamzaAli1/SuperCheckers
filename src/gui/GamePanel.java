@@ -40,8 +40,7 @@ public class GamePanel extends JPanel {
      * 0 = default, just paints board
      * 1 = highlights a space on the board (cyan)
      * 2 = prints something out in text box
-     * 3 = selecting spaces for a move (highlights in yellow)
-     * 4 = confirm final move; only paints button
+     * 3 = selecting spaces for a move (highlights in yellow), also displays confirmation button
      */
     private int paintPurpose;
     
@@ -74,9 +73,9 @@ public class GamePanel extends JPanel {
     /**
      * controls buttons
      */
-    private boolean buttonActive = false;
-    private boolean buttonPressed = false;
-    private boolean finalButtonPressed = false;
+    private boolean buttonActive = false; //if button is on screen
+    private boolean moveConfirmed = false; //if move is buttonPressed
+    private boolean buttonPressed = false; //if button is pressed
     
     /**
      * enables/disables mouse listeners based on value
@@ -122,22 +121,18 @@ public class GamePanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (touchEnabled) {
                     int x = e.getX(), y = e.getY();
-                    if (buttonActive && (x > 647 && x < 763 && y > 824 && y < 880)) {
-                        if ((paintPurpose == 1 || paintPurpose == 3))
-                            buttonPressed = true;
-                        else if (paintPurpose == 4) {
-                            if(x > 645 && x < 700 && y > 824 && y < 880)
-                                buttonPressed = true;
-                            else {
-                                resetSelected();
-                                resetMove();
-                            }
-                            finalButtonPressed = true;
+                    if (buttonActive && (x > 647 && x < 763 && y > 824 && y < 880) && paintPurpose == 3) {
+                        if(x > 645 && x < 700 && y > 824 && y < 880)
+                            moveConfirmed = true;
+                        else {
+                            resetSelected();
+                            resetMove();
+                            moveConfirmed = false;
                         }
+                        buttonPressed = true;
                     }
                     else if (paintPurpose == 1 || paintPurpose == 3) {
                         highlightSquare(x, y);
-                        buttonActive = true;
                         if (paintPurpose == 1)
                             piece = getSelectedPiece();
                     }
@@ -176,9 +171,8 @@ public class GamePanel extends JPanel {
      */
     public void reset() {
         paintPurpose = 0;
-        buttonPressed = false;
         buttonActive = false;
-        finalButtonPressed = false;
+        buttonPressed = false;
         repaint();
     }
     
@@ -200,7 +194,7 @@ public class GamePanel extends JPanel {
     
     /**
      * Sets the paintPurpose of the panel, used to paint panel from backend
-     * @param paintPurpose 
+     * @param paintPurpose the paint purpose you want to set
      */
     public void setPaintPurpose(int paintPurpose) {
         this.paintPurpose = paintPurpose;
@@ -224,19 +218,19 @@ public class GamePanel extends JPanel {
     }
     
     /**
-     * @return whether or not the painted button has been pressed
+     * @return whether or not the game can move on to move selection/confirm move selection
      */
-    public boolean confirmed() {
+    public boolean buttonPressed() {
         if (paintPurpose == 1)
             return !piece.isEmpty();
         return buttonPressed;
     }
     
     /**
-     * @return whether or not the final confirmation button has been pressed
+     * @return whether or not the move has been confirmed
      */
-    public boolean finalConfirm() {
-        return finalButtonPressed;
+    public boolean confirmed() {
+        return moveConfirmed;
     }
     
     /**
@@ -304,12 +298,11 @@ public class GamePanel extends JPanel {
                     int x = Integer.parseInt(m.substring(0, 1))*100, y = Integer.parseInt(m.substring(2))*100;
                     g.fillRect(x, y, 100, 100);
                 }
+                paintText(g, "Confirm Move?");
+                paintFinalButton(g);
                 //paintText(g, "Selected Space(s): " + move);
-                paintButton(g);
+                //paintButton(g);
             }
-        } else if (paintPurpose == 4) {
-            paintText(g, "Confirm move?");
-            paintFinalButton(g);
         }
         paintPieces(g);        
     }
@@ -397,10 +390,10 @@ public class GamePanel extends JPanel {
         return img;
     }
     
-    /**
+    /* OLD button method, new one below
      * paints the confirmation button
      * @param g graphics context
-     */
+     
     private void paintButton(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(647, 824, 116, 56);
@@ -409,10 +402,10 @@ public class GamePanel extends JPanel {
         g.setColor(Color.BLACK);
         g.drawString("Confirm?", 650, 860);
         buttonActive = true;
-    }
+    } */
     
     /**
-     * paints the final confirmation button
+     * paints the confirmation button
      * @param g graphics context
      */
     private void paintFinalButton(Graphics g) {

@@ -130,6 +130,7 @@ public final class ComputerPlayer extends Player {
         panel.resetMove();
         panel.reset();
         panel.setGameOutput("Computer is making its move...");
+        Thread.sleep(delay);
         
         Piece p;
         String moveL, moveR, moveL2, moveR2;

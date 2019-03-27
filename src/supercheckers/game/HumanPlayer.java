@@ -124,14 +124,13 @@ public class HumanPlayer extends Player {
         Piece selected = null;
         String[] moves = null;
         
-        panel.reset();
-        
         while (!confirmed) {
             //select piece
+            panel.reset();
             panel.resetSelected();
             panel.resetMove();
             while (loop) {
-                while (!panel.confirmed()) {
+                while (!panel.buttonPressed()) {
                     panel.enableTouch();
                     if (panel.getPaintPurpose() != 1) {
                         panel.setGameOutput(getName() + ", select a piece...");
@@ -153,10 +152,10 @@ public class HumanPlayer extends Player {
                 Thread.sleep(50);
                 panel.reset();
             }
-            //select new position (Note: the inputted moves MUST be in order. This will be accounted for in GUI)
+            //select new position & confirm move
             loop = true;
             while (loop) {
-                while (!panel.confirmed()) {
+                while (!panel.buttonPressed()) {
                     panel.enableTouch();
                     if (panel.getPaintPurpose() != 3) {
                         panel.setGameOutput(getName() + ", select where to move your piece...");
@@ -166,33 +165,28 @@ public class HumanPlayer extends Player {
                     Thread.sleep(50);
                 }
                 panel.disableTouch();
-                input = panel.getMove();
-                if (input.matches("([0-8],[0-8] ?)+")) {
-                    moves = input.split("[ ,]");
-                    loop = !validMove(g, moves, selected);
+                if (!panel.confirmed())
+                    break;
+                else {
+                    input = panel.getMove();
+                    if (input.matches("([0-8],[0-8] ?)+")) {
+                        moves = input.split("[ ,]");
+                        loop = !validMove(g, moves, selected);
+                    }
+                    if (loop) {
+                        panel.setGameOutput("Selected move not valid, please try again.");
+                        panel.resetMove();
+                        Thread.sleep(450);
+                    }
+                    Thread.sleep(50);
+                    panel.reset();
                 }
-                if (loop) {
-                    panel.setGameOutput("Selected move not valid, please try again.");
-                    panel.resetMove();
-                    Thread.sleep(450);
-                }
-                Thread.sleep(50);
-                panel.reset();
             }
-            //confirm move (y/n)
-            while (!panel.finalConfirm()) {
-                panel.enableTouch();
-                if (panel.getPaintPurpose() != 4)
-                    panel.setPaintPurpose(4);
-                Thread.sleep(50);
-            }
-            panel.disableTouch();
             if (panel.confirmed()) {
                 confirmed = true;
             } else {
                 loop = true;
                 selected = null;
-                panel.reset();
             }
         }
         clearKillMoves();

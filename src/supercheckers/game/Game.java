@@ -114,7 +114,7 @@ public class Game {
      */
     public Player play(GamePanel panel) throws InterruptedException {
         panel.setGameOutput("Starting Game...");
-    Thread.sleep(1000);
+        Thread.sleep(1000);
         
         panel.setGameOutput(one.getName() + " is " + one.getColor() + ", and " + two.getName() + " is " + two.getColor());
         Thread.sleep(3500);
@@ -143,6 +143,8 @@ public class Game {
                 board.turnUp();
             }
         }
+        panel.resetSelected();
+        panel.resetMove();
         panel.repaint();
         if (board.getReds().isEmpty() || !one.canMove(this)) {
             panel.setGameOutput(two.getName() + " (Black) Wins!");
